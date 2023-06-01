@@ -1,10 +1,11 @@
 <script setup>
-import { ArrowPathIcon } from '@heroicons/vue/24/solid';
+import { ArrowPathIcon, CheckIcon } from '@heroicons/vue/24/solid';
 import userAPI from '../api/user';
 import { ref, onMounted } from "vue";
 import timeFormatted from '../tools/timeFormatted';
 import UserManagerYesOrNo from './UserManagerYesOrNo.vue';
 import { useToast } from "vue-toastification";
+
 
 
 onMounted(() => {
@@ -22,14 +23,17 @@ async function fetchData() {
         users.value = result.data;
         loading.value = false;
         console.log(users.value);
+        if (users.value[0]["edit"] === undefined) {
+            users.value.forEach(user => user["edit"] = false);
+        }
     }
 }
 
 function deleteUser(id) {
-   toast.error({
+    toast.error({
         component: UserManagerYesOrNo,
         listeners: {
-            clickYse: async function (){
+            clickYse: async function () {
                 await userAPI.deleteUser(id);
                 fetchData();
                 toast.dismiss("deleteUser")
@@ -42,9 +46,39 @@ function deleteUser(id) {
         position: "bottom-center",
         timeout: false,
         // 根据该id来决定toast的身份
-        id:"deleteUser"
+        id: "deleteUser"
     });
+}
 
+function targetEdit(id) {
+    users.value.forEach(u => {
+        if (u._id == id) {
+            u.edit = !u.edit;
+        }
+    })
+}
+
+async function updateUser(id) {
+    let user = users.value.filter(u => u._id == id)[0]
+    
+    let sendUser = {
+        "name": user.name,
+        "email": user.email,
+        "password": user.password,
+    }
+
+    const result = await userAPI.updateUser(id, sendUser);
+    if (result.data != null || result.data != undefined) {
+        toast.success("修改成功", {
+            position: "bottom-center",
+            timeout: 2000,
+            // 根据该id来决定toast的身份
+            id: "deleteUser"
+        });
+    }
+
+    targetEdit(id)
+    fetchData()
 }
 
 </script>
@@ -82,20 +116,41 @@ function deleteUser(id) {
                                             alt="Avatar Tailwind CSS Component" />
                                     </div>
                                 </div>
-                                <div>
+
+
+                                <div v-if="user.edit">
+                                    <input :size="6" type="text" :value="user.name"
+                                        class="font-bold text-sm input input-bordered input-sm w-full max-w-xs" />
+                                </div>
+                                <div v-else>
                                     <div class="font-bold">{{ user.name }}</div>
                                 </div>
+
+
                             </div>
                         </td>
-                        <td>
+
+                        <td v-if="user.edit">
+                            <input type="text" :value="user.email"
+                                class="font-bold text-sm input input-bordered input-sm w-full max-w-xs" />
+                        </td>
+                        <td v-else>
                             {{ user.email }}
                         </td>
+
                         <td>
                             {{ timeFormatted(user.createdAt) }}
                         </td>
+
                         <th class="space-x-2">
-                            <button class="btn btn-primary btn-sm">编辑用户</button>
+                            <button class="btn btn-primary btn-sm" @click="targetEdit(user._id)">编辑用户</button>
+                            <button v-if="user.edit" class="btn btn-sm btn-ghost btn-square"
+                                @click="updateUser(user._id)">保存</button>
+                            <button v-if="user.edit" class="btn btn-sm btn-ghost btn-square"
+                                @click="targetEdit(user._id)">取消</button>
                             <button class="btn btn-error btn-sm" @click="deleteUser(user._id)">删除用户</button>
+
+
                         </th>
                     </tr>
                 </tbody>
