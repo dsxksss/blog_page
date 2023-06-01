@@ -7,8 +7,6 @@ import { ref, provide } from "vue";
 
 const nowPage = ref(0);
 provide("nowPage", nowPage);
-
-
 </script>
 
 
