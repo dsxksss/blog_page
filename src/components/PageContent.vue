@@ -15,5 +15,7 @@ const pages = [
 </script>
 
 <template>
+    <KeepAlive>
         <component :is="pages[inject('nowPage').value]" />
+    </KeepAlive>
 </template>
