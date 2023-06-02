@@ -1,23 +1,22 @@
 <script setup>
-import { ArrowPathIcon, CheckIcon } from '@heroicons/vue/24/solid';
+import { ArrowPathIcon } from '@heroicons/vue/24/solid';
 import userAPI from '../api/user';
 import { ref, onMounted } from "vue";
 import timeFormatted from '../tools/timeFormatted';
 import UserManagerYesOrNo from './UserManagerYesOrNo.vue';
 import { useToast } from "vue-toastification";
 
-
-
 onMounted(() => {
     fetchData();
 })
 
-let users = ref([])
-let loading = ref(true)
-let sendUser = ref(new Map())
+const users = ref([])
+const loading = ref(true)
+const isEditOpen = ref(false)
+const currentName = ref("")
+const currentEmail = ref("")
+const currentPassword = ref("")
 const toast = useToast()
-
-
 
 async function fetchData() {
     loading.value = true;
@@ -26,9 +25,6 @@ async function fetchData() {
         users.value = result.data;
         loading.value = false;
         console.log(users.value);
-        if (users.value[0]["edit"] === undefined) {
-            users.value.forEach(user => user["edit"] = false);
-        }
     }
 }
 
@@ -53,40 +49,49 @@ function deleteUser(id) {
     });
 }
 
-function targetEdit(id) {
-    const index = users.value.findIndex(u => u._id == id);
-    users.value[index].edit = true;
-
-    addSendUser(
-        users.value[index]._id,
-        users.value[index].name,
-        users.value[index].email,
-        users.value[index].password,
-    );
+function openEdit(id) {
+    if(isEditOpen.value){
+        toast.error("请编辑完当前用户后,再进行操作!", {
+            position: "top-center",
+            timeout: 3500,
+            // 根据该id来决定toast的身份
+            id: "edit"
+        });
+    }else{
+        const index = users.value.findIndex(u => u._id == id);
+        users.value[index].edit = true;
+        isEditOpen.value = true;
+        
+        currentName.value = users.value[index].name;
+        currentEmail.value = users.value[index].email;
+        currentPassword.value = users.value[index].password;
+    }
 }
 
-function addSendUser(id, name, email, password) {
-    sendUser.value.set(id, { name, email, password })
-    console.log(sendUser.value);
+function closeEdit(id){
+    const index = users.value.findIndex(u => u._id == id);
+    users.value[index].edit = false;
+    isEditOpen.value = false;
 }
 
 async function updateUser(id) {
+    const result = await userAPI.updateUser(id, {
+        name: currentName.value,
+        email: currentEmail.value,
+        password: currentPassword.value
+    });
 
-    
-    const result = await userAPI.updateUser(id, sendUser.value);
-    
-    console.log(sendUser.value);
-    console.log(result.data);
     if (result.data != null || result.data != undefined) {
         toast.success("修改成功", {
-            position: "bottom-center",
+            position: "top-center",
             timeout: 2000,
+            hideProgressBar: true,
             // 根据该id来决定toast的身份
             id: "deleteUser"
         });
     }
 
-    targetEdit(id)
+    closeEdit(id)
     fetchData()
 }
 
@@ -98,10 +103,12 @@ async function updateUser(id) {
     </div>
 
     <div v-else-if="!users.length" class="flex space-x-2 justify-center">
-        <div>数据库内没有任何用户,请先添加用户重试</div>
-        <button class="btn btn-ghost btn-circle" @click="fetchData()">
-            <ArrowPathIcon class="w-7 h-7" />
-        </button>
+        <div class="flex justify-center items-center space-x-4">
+            <span class="text-xl">数据库内没有任何用户 请先添加用户后刷新列表...</span>
+            <button class="btn btn-ghost btn-circle" @click="fetchData()">
+                <ArrowPathIcon class="w-7 h-7" />
+            </button>
+        </div>
     </div>
 
     <div v-else class="space-x-2 flex flex-row justify-center">
@@ -127,47 +134,51 @@ async function updateUser(id) {
                                     </div>
                                 </div>
 
-
+                                <!-- name -->
                                 <div v-if="user.edit">
-                                    <input :size="6" type="text" :value="user.name"
+                                    <input type="text" name="name" v-model="currentName"
                                         class="font-bold text-sm input input-bordered input-sm w-full max-w-xs" />
                                 </div>
                                 <div v-else>
                                     <div class="font-bold">{{ user.name }}</div>
                                 </div>
 
-
                             </div>
                         </td>
 
+                        <!-- email -->
                         <td v-if="user.edit">
-                            <input type="text" :value="user.email"
+                            <input type="text" name="email" v-model="currentEmail"
                                 class="font-bold text-sm input input-bordered input-sm w-full max-w-xs" />
                         </td>
                         <td v-else>
                             {{ user.email }}
                         </td>
 
+                        <!-- password -->
                         <td v-if="user.edit">
-                            <input :size="6" type="text" :value="user.password"
+                            <input type="text" name="password" v-model="currentPassword"
                                 class="font-bold text-sm input input-bordered input-sm w-full max-w-xs" />
                         </td>
                         <td v-else>
                             {{ user.password }}
                         </td>
 
+                        <!-- createdAt -->
                         <td>
                             {{ timeFormatted(user.createdAt) }}
                         </td>
 
                         <th class="space-x-2">
-                            <button class="btn btn-primary btn-sm" @click="targetEdit(user._id)">编辑用户</button>
-                            <button v-if="user.edit" class="btn btn-sm btn-ghost btn-square"
-                                @click="updateUser(user._id)">保存</button>
-                            <button v-if="user.edit" class="btn btn-sm btn-ghost btn-square"
-                                @click="targetEdit(user._id)">取消</button>
-                            <button class="btn btn-error btn-sm" @click="deleteUser(user._id)">删除用户</button>
+                            <button v-if="!user.edit" class="btn btn-primary btn-sm"
+                                @click="openEdit(user._id)">编辑用户</button>
+                            <button v-if="!user.edit" class="btn btn-error btn-sm"
+                                @click="deleteUser(user._id)">删除用户</button>
 
+                            <button v-if="user.edit" class="btn btn-success btn-sm"
+                                @click="updateUser(user._id)">保存数据</button>
+                            <button v-if="user.edit" class="btn btn-primary btn-sm"
+                                @click="closeEdit(user._id)">取消编辑</button>
 
                         </th>
                     </tr>
