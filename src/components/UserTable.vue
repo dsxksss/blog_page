@@ -14,7 +14,10 @@ onMounted(() => {
 
 let users = ref([])
 let loading = ref(true)
+let sendUser = ref(new Map())
 const toast = useToast()
+
+
 
 async function fetchData() {
     loading.value = true;
@@ -51,23 +54,29 @@ function deleteUser(id) {
 }
 
 function targetEdit(id) {
-    users.value.forEach(u => {
-        if (u._id == id) {
-            u.edit = !u.edit;
-        }
-    })
+    const index = users.value.findIndex(u => u._id == id);
+    users.value[index].edit = true;
+
+    addSendUser(
+        users.value[index]._id,
+        users.value[index].name,
+        users.value[index].email,
+        users.value[index].password,
+    );
+}
+
+function addSendUser(id, name, email, password) {
+    sendUser.value.set(id, { name, email, password })
+    console.log(sendUser.value);
 }
 
 async function updateUser(id) {
-    let user = users.value.filter(u => u._id == id)[0]
-    
-    let sendUser = {
-        "name": user.name,
-        "email": user.email,
-        "password": user.password,
-    }
 
-    const result = await userAPI.updateUser(id, sendUser);
+    
+    const result = await userAPI.updateUser(id, sendUser.value);
+    
+    console.log(sendUser.value);
+    console.log(result.data);
     if (result.data != null || result.data != undefined) {
         toast.success("修改成功", {
             position: "bottom-center",
@@ -102,6 +111,7 @@ async function updateUser(id) {
                     <tr>
                         <th>用户名称</th>
                         <th>电子邮箱</th>
+                        <th>用户密码</th>
                         <th>创建日期</th>
                         <th>操作按钮</th>
                     </tr>
@@ -136,6 +146,14 @@ async function updateUser(id) {
                         </td>
                         <td v-else>
                             {{ user.email }}
+                        </td>
+
+                        <td v-if="user.edit">
+                            <input :size="6" type="text" :value="user.password"
+                                class="font-bold text-sm input input-bordered input-sm w-full max-w-xs" />
+                        </td>
+                        <td v-else>
+                            {{ user.password }}
                         </td>
 
                         <td>
