@@ -5,6 +5,8 @@ import { ref, onMounted } from "vue";
 import timeFormatted from '../tools/timeFormatted';
 import UserManagerYesOrNo from './UserManagerYesOrNo.vue';
 import { useToast } from "vue-toastification";
+import randomAvatar from '../tools/randomAvatar';
+
 
 onMounted(() => {
     fetchData();
@@ -308,7 +310,7 @@ async function updateUser(id) {
                                 <div class="flex items-center space-x-3">
                                     <div class="avatar">
                                         <div class="mask mask-circle w-12 h-12">
-                                            <img src="https://daisyui.com/tailwind-css-component-profile-2@56w.png"
+                                            <img :src="randomAvatar()"
                                                 alt="Avatar Tailwind CSS Component" />
                                         </div>
                                     </div>
