@@ -6,7 +6,7 @@ import menuItems from '../data/menuItems';
 
 <template>
     <div class="navbar bg-base-100 z-50">
-        <div data-tauri-drag-region class="flex-1">
+        <div class="flex-1">
             <button class="btn btn-ghost text-2xl">
                 <component :is="menuItems[inject('nowPage').value].component" :class="`w-6 h-6 ${menuItems[inject('nowPage').value].iconColor}`"></component>
                 {{ menuItems[inject('nowPage').value].title }}

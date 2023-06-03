@@ -129,6 +129,11 @@
   resolved "https://registry.yarnpkg.com/@esbuild/win32-x64/-/win32-x64-0.16.17.tgz#c5a1a4bfe1b57f0c3e61b29883525c6da3e5c091"
   integrity sha512-y+EHuSchhL7FjHgvQL/0fnnFmO4T1bhvWANX6gcnqTjtnKWbTvUMCpGnv2+t+31d7RzyEAYAd4u2fnIhHL6N/Q==
 
+"@headlessui/vue@^1.7.14":
+  version "1.7.14"
+  resolved "https://registry.npmmirror.com/@headlessui/vue/-/vue-1.7.14.tgz#cc10712044944bc728f5ef8b2df2174c1194a55e"
+  integrity sha512-aL9U9Sa7wdOzlrfjx6EjMIYNRCma5mngWcWzQBcHFwznpRZ8g/QZ/AYFtRDrZZUw22Ttttja4D7ZRXFwhONewA==
+
 "@heroicons/vue@^2.0.15":
   version "2.0.15"
   resolved "https://registry.yarnpkg.com/@heroicons/vue/-/vue-2.0.15.tgz#2c8b26549cca2cc91a319b09546ef6d7b57eac75"

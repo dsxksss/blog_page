@@ -6,8 +6,9 @@ const userAPI = {
         const result = await axios.get(`http://localhost:3001/user`);
         return Math.ceil(result.data.length / 5);
     },
-    getAllUsers: () => axios.get(`http://localhost:3001/user`),
     // 获取所有用户
+    getAllUsers: () => axios.get(`http://localhost:3001/user`),
+    // 分页获取用户
     getUsers: (page = 1, limit = 5) => axios.get(`http://localhost:3001/user?page=${page}&limit=${limit}`),
     // 获取单个用户
     getUserById: (id) => axios.get(`http://localhost:3001/user/${id}`),
