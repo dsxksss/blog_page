@@ -27,9 +27,9 @@ async function getPageMaxCount() {
     pageMaxCount.value = maxCount;
 }
 
-async function fetchData(pageCount=1) {
+async function fetchData(pageCount = 1) {
     getPageMaxCount();
-    
+
     loading.value = true;
     const result = await userAPI.getUsers(pageCount);
     if (result.status === 200) {
@@ -40,6 +40,7 @@ async function fetchData(pageCount=1) {
 }
 
 async function fetchNextData() {
+    if (!openCheck()) return;
     getPageMaxCount();
     if (pageCount.value >= pageMaxCount.value) {
         toast.error("这已经是最后一页了", {
@@ -62,6 +63,7 @@ async function fetchNextData() {
 }
 
 async function fetchBackData() {
+    if (!openCheck()) return;
     getPageMaxCount();
 
     if (pageCount.value <= 1) {
@@ -85,6 +87,7 @@ async function fetchBackData() {
 }
 
 async function fetchEndData() {
+    if (!openCheck()) return;
     getPageMaxCount();
     loading.value = true;
     pageCount.value = pageMaxCount.value
@@ -112,8 +115,10 @@ function validCurrentData() {
     return can;
 }
 
-function validEmail() {
-    return !users.value.slice(0, users.value.length - 1).find(u => u.email === currentEmail.value)
+async function hisEmail() {
+    const result = await userAPI.getAllUsers()
+    const emailList = result.data.map(user => user.email);
+    return emailList.includes(currentEmail.value)
 }
 
 function clearCurrent() {
@@ -166,7 +171,7 @@ async function createUser() {
         return;
     }
 
-    if (!validEmail()) {
+    if (await hisEmail()) {
         toast.error("该邮箱已使用 请修改后重试!", {
             position: "top-center",
             timeout: 3500,
@@ -192,7 +197,7 @@ async function createUser() {
 
     closeCreate();
     clearCurrent()
-    fetchData(pageCount.value)
+    fetchEndData()
 }
 
 function deleteUser(id) {
@@ -201,8 +206,8 @@ function deleteUser(id) {
         listeners: {
             clickYse: async function () {
                 await userAPI.deleteUser(id);
-                if(users.value.length === 1){
-                    if(pageCount.value > 1){
+                if (users.value.length === 1) {
+                    if (pageCount.value > 1) {
                         pageCount.value -= 1;
                     }
                 }
@@ -363,7 +368,8 @@ async function updateUser(id) {
                                         @click="isCreateOpen ? createUser() : updateUser(user._id)">{{ isCreateOpen ?
                                             "创建用户" : "保存数据" }}</button>
                                     <button v-if="user.edit" class="btn btn-primary btn-sm"
-                                        @click="isCreateOpen ? closeCreate() : closeEdit(user._id)">{{ isCreateOpen ? "取消创建" :
+                                        @click="isCreateOpen ? closeCreate() : closeEdit(user._id)">{{ isCreateOpen ? "取消创建"
+                                            :
                                             "取消编辑" }}</button>
                                 </th>
                             </tr>
