@@ -5,13 +5,16 @@ import { ref, onMounted } from "vue";
 import timeFormatted from '../tools/timeFormatted';
 import UserManagerYesOrNo from '../components/UserManagerYesOrNo.vue';
 import { useToast } from "vue-toastification";
+import avatarAPI from "../api/avatar";
 
 onMounted(() => {
     fetchData();
     getPageMaxCount();
+    getAvatar();
 })
 
 const users = ref([])
+const imgs = ref([])
 const loading = ref(true)
 const isEditOpen = ref(false)
 const isCreateOpen = ref(false)
@@ -97,6 +100,11 @@ async function fetchEndData() {
         loading.value = false;
         console.log(users.value);
     }
+}
+
+async function getAvatar() {
+    const result = await avatarAPI.getCats(100);
+    imgs.value = result.data
 }
 
 function validCurrentData() {
@@ -323,7 +331,7 @@ async function updateUser(id) {
                                     <div class="flex items-center space-x-3">
                                         <div class="avatar">
                                             <div class="mask mask-circle w-12 h-12">
-                                                <img :src="`/${index + 1}.png`" alt="加载失败" />
+                                                <img :src="imgs[index].url" alt="加载失败" />
                                             </div>
                                         </div>
                                         <!-- name -->

@@ -1,18 +1,18 @@
 <script setup>
 import { ref } from 'vue'
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
-import { useToast } from "vue-toastification";
-import blogAPI from '../api/blog';
+import { XMarkIcon } from '@heroicons/vue/24/solid';
+import timeFormatted from '../tools/timeFormatted';
 
 const props = defineProps({
     title: String,
     content: String,
     authorName: String,
-    blogId: String
+    createdAt: Date,
+    img: String,
 })
 
 const open = ref(false)
-const toast = useToast()
 const emit = defineEmits(['updateSuccess'])
 
 function setopen(value) {
@@ -22,10 +22,26 @@ function setopen(value) {
 </script>
 
 <template>
-    <div class="inline">
-        <h1 class="" @click="setopen(true)">{{ title }}</h1>
-        <h2 class="">内容: {{ title }}</h2>
-        <h3 class="">作者: {{ authorName }}</h3>
+    <div>
+        <div class="space-y-4 px-20" @click="setopen(true)">
+            <div class="text-5xl border-b-4 border-opacity-0 border-white hover:border-sky-300 py-2">{{ title }}</div>
+            <div class="text-lg"> {{ timeFormatted(props.createdAt) }}</div>
+            <div class="flex justify-between items-end">
+                <div class="avatar">
+                    <div class="mask mask-circle w-12 h-12 mr-4">
+                        <img :src="props.img" alt="加载失败" />
+                    </div>
+                    <div class="flex flex-col justify-start">
+                        <div class="text-lg"> {{ authorName }} </div>
+                        <div>编辑</div>
+                    </div>
+                </div>
+                <div class="text-xl">浏览更多</div>
+            </div>
+        </div>
+
+
+
 
         <TransitionRoot class="z-50" as="template" :show="open">
             <Dialog as="div" class="relative z-10" @close="open = false">
@@ -38,7 +54,10 @@ function setopen(value) {
                             leave-from="opacity-100 translate-y-0 sm:scale-100"
                             leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
                             <DialogPanel
-                                class="relative bg-slate-700 h-[75vh] w-[90vw] transform overflow-hidden rounded-lg shadow-xl transition-all">
+                                class="relative bg-slate-700 overflow-scroll scroll-smooth h-[84vh] w-[90vw] transform rounded-lg shadow-xl transition-all">
+                                <button class="btn btn-ghost btn-circle absolute right-3 top-3" @click="setopen(false)">
+                                    <XMarkIcon class="w-7 h-7" />
+                                </button>
                                 <div class=" px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                                     <div class=" space-y-6">
                                         <div>

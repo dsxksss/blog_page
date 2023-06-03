@@ -150,11 +150,11 @@ function deleteBlog(id) {
             <div v-if="loading.value" class="flex space-x-2 justify-center">
                 加载中请稍后......
             </div>
-            <div v-else-if="!users.length" class="flex space-x-2 justify-center">
+            <div v-else-if="!blogs.length" class="flex space-x-2 justify-center">
                 <div class="flex justify-center items-center space-x-1">
                     <span class="text-xl mr-2">数据库内没有任何博客 请先添加博客后刷新列表... </span>
 
-                    <CreateBlogDialog />
+                    <CreateBlogDialog @createSuccess="() => fetchEndData()" />
 
                     <button class="btn btn-ghost" @click="fetchData()">
                         <ArrowPathIcon class="w-7 h-7" />
