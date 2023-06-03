@@ -1,5 +1,5 @@
 <script setup>
-import { ArrowPathIcon } from '@heroicons/vue/24/solid';
+import { ArrowPathIcon, UserPlusIcon } from '@heroicons/vue/24/solid';
 import userAPI from '../api/user';
 import { ref, onMounted } from "vue";
 import timeFormatted from '../tools/timeFormatted';
@@ -13,10 +13,12 @@ onMounted(() => {
 const users = ref([])
 const loading = ref(true)
 const isEditOpen = ref(false)
+const isCreateOpen = ref(false)
 const currentName = ref("")
 const currentEmail = ref("")
 const currentPassword = ref("")
 const toast = useToast()
+
 
 async function fetchData() {
     loading.value = true;
@@ -28,6 +30,104 @@ async function fetchData() {
     }
 }
 
+function validCurrentData() {
+    let can = true;
+
+    if (currentName.value.trim() === "") {
+        can = false;
+    }
+    if (currentEmail.value.trim() === "") {
+        can = false;
+    }
+    if (currentPassword.value.trim() === "") {
+        can = false;
+    }
+
+    return can;
+}
+
+function validEmail() {
+    return !users.value.slice(0, users.value.length - 1).find(u => u.email === currentEmail.value)
+}
+
+function clearCurrent() {
+    currentName.value = ""
+    currentEmail.value = ""
+    currentPassword.value = ""
+}
+
+function openCheck() {
+    if (isEditOpen.value || isCreateOpen.value) {
+        toast.error("请编辑完当前用户后,再进行操作!", {
+            position: "top-center",
+            timeout: 3500,
+            // 根据该id来决定toast的身份
+            id: "edit"
+        });
+        return false;
+    }
+    return true;
+}
+
+function openCreate() {
+    if (!openCheck()) return;
+    users.value.push({
+        name: "",
+        email: "",
+        password: "",
+        edit: true,
+    })
+    loading.value = false;
+    isCreateOpen.value = true;
+    isEditOpen.value = true;
+}
+
+function closeCreate() {
+    loading.value = true;
+    fetchData();
+    isCreateOpen.value = false;
+    isEditOpen.value = false;
+}
+
+async function createUser() {
+    if (!validCurrentData()) {
+        toast.error("请填写完整 再创建用户!", {
+            position: "top-center",
+            timeout: 3500,
+            // 根据该id来决定toast的身份
+            id: "请填写完整 再创建用户!"
+        });
+        return;
+    }
+
+    if (!validEmail()) {
+        toast.error("该邮箱已使用 请修改后重试!", {
+            position: "top-center",
+            timeout: 3500,
+            // 根据该id来决定toast的身份
+            id: "该邮箱已使用 请修改后重试!"
+        });
+        return;
+    }
+
+    await userAPI.createUser({
+        name: currentName.value,
+        email: currentEmail.value,
+        password: currentPassword.value
+    })
+
+    toast.success("创建成功", {
+        position: "top-center",
+        timeout: 2000,
+        hideProgressBar: true,
+        // 根据该id来决定toast的身份
+        id: "创建成功"
+    });
+
+    closeCreate();
+    clearCurrent()
+}
+
 function deleteUser(id) {
     toast.error({
         component: UserManagerYesOrNo,
@@ -36,6 +136,13 @@ function deleteUser(id) {
                 await userAPI.deleteUser(id);
                 fetchData();
                 toast.dismiss("deleteUser")
+                toast.success("删除成功", {
+                    position: "top-center",
+                    timeout: 2000,
+                    hideProgressBar: true,
+                    // 根据该id来决定toast的身份
+                    id: "删除成功"
+                });
             },
             clickNo: function () {
                 toast.dismiss("deleteUser")
@@ -43,6 +150,7 @@ function deleteUser(id) {
         }
     }, {
         position: "bottom-center",
+        closeOnClick: false,
         timeout: false,
         // 根据该id来决定toast的身份
         id: "deleteUser"
@@ -50,25 +158,19 @@ function deleteUser(id) {
 }
 
 function openEdit(id) {
-    if(isEditOpen.value){
-        toast.error("请编辑完当前用户后,再进行操作!", {
-            position: "top-center",
-            timeout: 3500,
-            // 根据该id来决定toast的身份
-            id: "edit"
-        });
-    }else{
-        const index = users.value.findIndex(u => u._id == id);
-        users.value[index].edit = true;
-        isEditOpen.value = true;
-        
-        currentName.value = users.value[index].name;
-        currentEmail.value = users.value[index].email;
-        currentPassword.value = users.value[index].password;
-    }
+    if (!openCheck()) return;
+
+    const index = users.value.findIndex(u => u._id == id);
+    users.value[index].edit = true;
+    isEditOpen.value = true;
+
+    currentName.value = users.value[index].name;
+    currentEmail.value = users.value[index].email;
+    currentPassword.value = users.value[index].password;
 }
 
-function closeEdit(id){
+
+function closeEdit(id) {
     const index = users.value.findIndex(u => u._id == id);
     users.value[index].edit = false;
     isEditOpen.value = false;
@@ -103,10 +205,15 @@ async function updateUser(id) {
     </div>
 
     <div v-else-if="!users.length" class="flex space-x-2 justify-center">
-        <div class="flex justify-center items-center space-x-4">
-            <span class="text-xl">数据库内没有任何用户 请先添加用户后刷新列表...</span>
-            <button class="btn btn-ghost btn-circle" @click="fetchData()">
+        <div class="flex justify-center items-center space-x-1">
+            <span class="text-xl mr-2">数据库内没有任何用户 请先添加用户后刷新列表... </span>
+            <button class="btn btn-ghost space-x-2" @click="openCreate()">
+                <UserPlusIcon class="w-7 h-7" />
+                <div>添加用户</div>
+            </button>
+            <button class="btn btn-ghost" @click="fetchData()">
                 <ArrowPathIcon class="w-7 h-7" />
+                <div>刷新列表</div>
             </button>
         </div>
     </div>
@@ -119,7 +226,7 @@ async function updateUser(id) {
                         <th>用户名称</th>
                         <th>电子邮箱</th>
                         <th>用户密码</th>
-                        <th>创建日期</th>
+                        <th v-if="!isCreateOpen.value">创建日期</th>
                         <th>操作按钮</th>
                     </tr>
                 </thead>
@@ -165,20 +272,26 @@ async function updateUser(id) {
                         </td>
 
                         <!-- createdAt -->
-                        <td>
+                        <td v-if="user.createdAt">
                             {{ timeFormatted(user.createdAt) }}
                         </td>
+                        <td v-else>
+                            待创建...
+                        </td>
+
 
                         <th class="space-x-2">
                             <button v-if="!user.edit" class="btn btn-primary btn-sm"
                                 @click="openEdit(user._id)">编辑用户</button>
                             <button v-if="!user.edit" class="btn btn-error btn-sm"
-                                @click="deleteUser(user._id)">删除用户</button>
+                                @click="() => { if (!openCheck()) return; deleteUser(user._id) }">删除用户</button>
 
                             <button v-if="user.edit" class="btn btn-success btn-sm"
-                                @click="updateUser(user._id)">保存数据</button>
+                                @click="isCreateOpen ? createUser() : updateUser(user._id)">{{ isCreateOpen ?
+                                    "创建用户" : "保存数据" }}</button>
                             <button v-if="user.edit" class="btn btn-primary btn-sm"
-                                @click="closeEdit(user._id)">取消编辑</button>
+                                @click="isCreateOpen ? closeCreate() : closeEdit(user._id)">{{ isCreateOpen ? "取消创建" :
+                                    "取消编辑" }}</button>
 
                         </th>
                     </tr>
@@ -187,8 +300,13 @@ async function updateUser(id) {
             </table>
         </div>
 
-        <button class="btn btn-ghost btn-circle" @click="fetchData()">
+        <button class="btn btn-ghost space-x-2" @click="openCreate()">
+            <UserPlusIcon class="w-7 h-7" />
+            <div>添加用户</div>
+        </button>
+        <button class="btn btn-ghost" @click="fetchData()">
             <ArrowPathIcon class="w-7 h-7" />
+            <div>刷新列表</div>
         </button>
 
     </div>
