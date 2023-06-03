@@ -11,8 +11,10 @@
   },
   "dependencies": {
     "@heroicons/vue": "^2.0.15",
+    "@kangc/v-md-editor": "^2.3.15",
     "axios": "^1.4.0",
     "daisyui": "^2.50.0",
+    "highlight": "^0.2.4",
     "vue": "^3.2.45",
     "vue-toastification": "^2.0.0-rc.5"
   },
