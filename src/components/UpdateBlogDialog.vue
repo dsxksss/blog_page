@@ -1,36 +1,21 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
-import { PencilIcon } from '@heroicons/vue/24/solid';
 import { useToast } from "vue-toastification";
-import userAPI from '../api/user';
 import blogAPI from '../api/blog';
 
-const open = ref(false)
-const users = ref([])
-const currentTitle = ref('')
-const currentContent = ref('')
-const currentAuthor = ref('')
-const toast = useToast()
-const emit = defineEmits(['createSuccess'])
-
-
-onMounted(() => {
-    fetchData();
+const props = defineProps({
+    title: String,
+    content: String,
+    authorName: String,
+    blogId: String
 })
 
-async function fetchData() {
-    const result = await userAPI.getAllUsers();
-    if (result.status === 200) {
-        users.value = result.data;
-    }
-}
-
-function clearCurrent(){
-    currentTitle.value = "";
-    currentContent.value = "";
-    currentAuthor.value = "";
-}
+const open = ref(false)
+const currentTitle = ref(props.title)
+const currentContent = ref(props.content)
+const toast = useToast()
+const emit = defineEmits(['updateSuccess'])
 
 function validCurrentData() {
     let can = true;
@@ -40,30 +25,27 @@ function validCurrentData() {
     if (currentContent.value.trim() === "") {
         can = false;
     }
-    if (currentAuthor.value.trim() === "") {
-        can = false;
-    }
     return can;
 }
 
-async function createBlog(){
-    if(!validCurrentData()){
-        toast.error("请填写完整 再创建博客!", {
+async function updateBlog() {
+     if (!validCurrentData()) {
+        toast.error("请填写完整 再编辑博客!", {
             position: "top-center",
             timeout: 3500,
             // 根据该id来决定toast的身份
-            id: "请填写完整 再创建博客!"
+            id: "请填写完整 再编辑博客!"
         });
         return;
     }
 
-    await blogAPI.createBlog({
+    await blogAPI.updateBlog(
+        props.blogId, {
         title: currentTitle.value,
         content: currentContent.value,
-        author: currentAuthor.value
     })
 
-    toast.success("创建成功", {
+    toast.success("修改成功", {
         position: "top-center",
         timeout: 2000,
         hideProgressBar: true,
@@ -71,8 +53,7 @@ async function createBlog(){
         id: "创建成功"
     });
 
-    emit('createSuccess')
-    clearCurrent();
+    emit('updateSuccess')
     open.value = false;
 }
 
@@ -83,11 +64,8 @@ function setopen(value) {
 </script>
 
 <template>
-    <div>
-        <button class="btn btn-ghost space-x-2" @click="setopen(true)">
-            <PencilIcon class="w-7 h-7" />
-            <div>新增博客</div>
-        </button>
+    <div class="inline">
+        <button class="btn btn-primary btn-sm" @click="setopen(true)">编辑博客</button>
 
         <TransitionRoot class="z-50" as="template" :show="open">
             <Dialog as="div" class="relative z-10" @close="open = false">
@@ -115,15 +93,15 @@ function setopen(value) {
                                                 </div>
                                                 <div class="space-y-2">
                                                     <div class="text-2xl">发布用户:</div>
-                                                    <select v-model="currentAuthor" class="select select-bordered w-full max-w-xs">
-                                                        <option disabled selected>请选择发布用户</option>
-                                                        <option v-for="user in users" :value="user._id">{{ user.name }}</option>
+                                                    <select class="select select-bordered w-full max-w-xs">
+                                                        <option disabled selected>{{ authorName }}</option>
+
                                                     </select>
                                                 </div>
                                             </div>
 
                                             <div class="flex flex-row justify-end p-6 space-x-4">
-                                                <button class="btn btn-success" @click="createBlog()">创建博客</button>
+                                                <button class="btn btn-success" @click="updateBlog()">修改博客</button>
                                                 <button class="btn btn-primary" @click="open = false">取消操作</button>
                                             </div>
 

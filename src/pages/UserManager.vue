@@ -28,7 +28,7 @@ async function getPageMaxCount() {
 }
 
 async function fetchData(pageCount = 1) {
-    getPageMaxCount();
+    await getPageMaxCount();
 
     loading.value = true;
     const result = await userAPI.getUsers(pageCount);
@@ -41,7 +41,7 @@ async function fetchData(pageCount = 1) {
 
 async function fetchNextData() {
     if (!openCheck()) return;
-    getPageMaxCount();
+    await getPageMaxCount();
     if (pageCount.value >= pageMaxCount.value) {
         toast.error("这已经是最后一页了", {
             position: "top-right",
@@ -64,7 +64,7 @@ async function fetchNextData() {
 
 async function fetchBackData() {
     if (!openCheck()) return;
-    getPageMaxCount();
+    await getPageMaxCount();
 
     if (pageCount.value <= 1) {
         toast.error("这已经是第一页了", {
@@ -88,7 +88,7 @@ async function fetchBackData() {
 
 async function fetchEndData() {
     if (!openCheck()) return;
-    getPageMaxCount();
+    await getPageMaxCount();
     loading.value = true;
     pageCount.value = pageMaxCount.value
     const result = await userAPI.getUsers(pageCount.value)
