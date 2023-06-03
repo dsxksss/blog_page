@@ -218,96 +218,97 @@ async function updateUser(id) {
         </div>
     </div>
 
-    <div v-else class="space-x-2 flex flex-row justify-center">
-        <div class="overflow-x-auto flex lg:justify-center mt-20">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>用户名称</th>
-                        <th>电子邮箱</th>
-                        <th>用户密码</th>
-                        <th v-if="!isCreateOpen.value">创建日期</th>
-                        <th>操作按钮</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="user in users" :key="user._id">
-                        <td>
-                            <div class="flex items-center space-x-3">
-                                <div class="avatar">
-                                    <div class="mask mask-circle w-12 h-12">
-                                        <img src="https://daisyui.com/tailwind-css-component-profile-2@56w.png"
-                                            alt="Avatar Tailwind CSS Component" />
+    <div v-else class="flex flex-col h-[80vh] space-y-8 justify-center items-center xl:mr-40">
+        <div class=" space-x-4">
+            <button class="btn btn-ghost space-x-2" @click="openCreate()">
+                <UserPlusIcon class="w-7 h-7" />
+                <div>添加用户</div>
+            </button>
+            <button class="btn btn-ghost" @click="fetchData()">
+                <ArrowPathIcon class="w-7 h-7" />
+                <div>刷新列表</div>
+            </button>
+        </div>
+        <div class="space-x-2 flex flex-row justify-center ">
+            <div class="overflow-x-auto flex lg:justify-center">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>用户名称</th>
+                            <th>电子邮箱</th>
+                            <th>用户密码</th>
+                            <th v-if="!isCreateOpen.value">创建日期</th>
+                            <th>操作按钮</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="user in users" :key="user._id">
+                            <td>
+                                <div class="flex items-center space-x-3">
+                                    <div class="avatar">
+                                        <div class="mask mask-circle w-12 h-12">
+                                            <img src="https://daisyui.com/tailwind-css-component-profile-2@56w.png"
+                                                alt="Avatar Tailwind CSS Component" />
+                                        </div>
+                                    </div>
+                                    <!-- name -->
+                                    <div v-if="user.edit">
+                                        <input type="text" name="name" v-model="currentName"
+                                            class="font-bold text-sm input input-bordered input-sm w-full max-w-xs" />
+                                    </div>
+                                    <div v-else>
+                                        <div class="font-bold">{{ user.name }}</div>
                                     </div>
                                 </div>
+                            </td>
+                            <!-- email -->
+                            <td v-if="user.edit">
+                                <input type="text" name="email" v-model="currentEmail"
+                                    class="font-bold text-sm input input-bordered input-sm w-full max-w-xs" />
+                            </td>
+                            <td v-else>
+                                {{ user.email }}
+                            </td>
+                            <!-- password -->
+                            <td v-if="user.edit">
+                                <input type="text" name="password" v-model="currentPassword"
+                                    class="font-bold text-sm input input-bordered input-sm w-full max-w-xs" />
+                            </td>
+                            <td v-else>
+                                {{ user.password }}
+                            </td>
+                            <!-- createdAt -->
+                            <td v-if="user.createdAt">
+                                {{ timeFormatted(user.createdAt) }}
+                            </td>
+                            <td v-else>
+                                待创建...
+                            </td>
+                            <th class="space-x-2">
+                                <button v-if="!user.edit" class="btn btn-primary btn-sm"
+                                    @click="openEdit(user._id)">编辑用户</button>
+                                <button v-if="!user.edit" class="btn btn-error btn-sm"
+                                    @click="() => { if (!openCheck()) return; deleteUser(user._id) }">删除用户</button>
+                                <button v-if="user.edit" class="btn btn-success btn-sm"
+                                    @click="isCreateOpen ? createUser() : updateUser(user._id)">{{ isCreateOpen ?
+                                        "创建用户" : "保存数据" }}</button>
+                                <button v-if="user.edit" class="btn btn-primary btn-sm"
+                                    @click="isCreateOpen ? closeCreate() : closeEdit(user._id)">{{ isCreateOpen ? "取消创建" :
+                                        "取消编辑" }}</button>
+                            </th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
-                                <!-- name -->
-                                <div v-if="user.edit">
-                                    <input type="text" name="name" v-model="currentName"
-                                        class="font-bold text-sm input input-bordered input-sm w-full max-w-xs" />
-                                </div>
-                                <div v-else>
-                                    <div class="font-bold">{{ user.name }}</div>
-                                </div>
-
-                            </div>
-                        </td>
-
-                        <!-- email -->
-                        <td v-if="user.edit">
-                            <input type="text" name="email" v-model="currentEmail"
-                                class="font-bold text-sm input input-bordered input-sm w-full max-w-xs" />
-                        </td>
-                        <td v-else>
-                            {{ user.email }}
-                        </td>
-
-                        <!-- password -->
-                        <td v-if="user.edit">
-                            <input type="text" name="password" v-model="currentPassword"
-                                class="font-bold text-sm input input-bordered input-sm w-full max-w-xs" />
-                        </td>
-                        <td v-else>
-                            {{ user.password }}
-                        </td>
-
-                        <!-- createdAt -->
-                        <td v-if="user.createdAt">
-                            {{ timeFormatted(user.createdAt) }}
-                        </td>
-                        <td v-else>
-                            待创建...
-                        </td>
-
-
-                        <th class="space-x-2">
-                            <button v-if="!user.edit" class="btn btn-primary btn-sm"
-                                @click="openEdit(user._id)">编辑用户</button>
-                            <button v-if="!user.edit" class="btn btn-error btn-sm"
-                                @click="() => { if (!openCheck()) return; deleteUser(user._id) }">删除用户</button>
-
-                            <button v-if="user.edit" class="btn btn-success btn-sm"
-                                @click="isCreateOpen ? createUser() : updateUser(user._id)">{{ isCreateOpen ?
-                                    "创建用户" : "保存数据" }}</button>
-                            <button v-if="user.edit" class="btn btn-primary btn-sm"
-                                @click="isCreateOpen ? closeCreate() : closeEdit(user._id)">{{ isCreateOpen ? "取消创建" :
-                                    "取消编辑" }}</button>
-
-                        </th>
-                    </tr>
-                </tbody>
-
-            </table>
         </div>
 
-        <button class="btn btn-ghost space-x-2" @click="openCreate()">
-            <UserPlusIcon class="w-7 h-7" />
-            <div>添加用户</div>
-        </button>
-        <button class="btn btn-ghost" @click="fetchData()">
-            <ArrowPathIcon class="w-7 h-7" />
-            <div>刷新列表</div>
-        </button>
+        <div class="join">
+            <button class="join-item btn btn-lg">1</button>
+            <button class="join-item btn btn-lg btn-active">2</button>
+            <button class="join-item btn btn-lg">3</button>
+            <button class="join-item btn btn-lg">4</button>
+        </div>
 
     </div>
 </template>
