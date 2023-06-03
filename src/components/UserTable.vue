@@ -1,5 +1,5 @@
 <script setup>
-import { ArrowPathIcon, UserPlusIcon } from '@heroicons/vue/24/solid';
+import { ArrowPathIcon, UserPlusIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/24/solid';
 import userAPI from '../api/user';
 import { ref, onMounted } from "vue";
 import timeFormatted from '../tools/timeFormatted';
@@ -8,6 +8,7 @@ import { useToast } from "vue-toastification";
 
 onMounted(() => {
     fetchData();
+    getPageMaxCount();
 })
 
 const users = ref([])
@@ -17,12 +18,71 @@ const isCreateOpen = ref(false)
 const currentName = ref("")
 const currentEmail = ref("")
 const currentPassword = ref("")
+const pageCount = ref(1)
+const pageMaxCount = ref(0)
 const toast = useToast()
 
+async function getPageMaxCount() {
+    const maxCount =await userAPI.getPageMaxCount()
+    pageMaxCount.value = maxCount;
+}
 
 async function fetchData() {
     loading.value = true;
     const result = await userAPI.getAllUsers();
+    if (result.status === 200) {
+        users.value = result.data;
+        loading.value = false;
+        console.log(users.value);
+    }
+}
+
+async function fetchNextData() {
+    if (pageCount.value >= pageMaxCount.value ){
+        toast.error("这已经是最后一页了", {
+            position: "top-right",
+            timeout: 3500,
+            // 根据该id来决定toast的身份
+            id: "这已经是最后一页了"
+        });
+        return;
+    }
+
+    loading.value = true;
+    pageCount.value += 1;
+    const result = await userAPI.getAllUsers(pageCount.value)
+    if (result.status === 200) {
+        users.value = result.data;
+        loading.value = false;
+        console.log(users.value);
+    }
+}
+
+async function fetchBackData() {
+    if (pageCount.value <= 1) {
+        toast.error("这已经是第一页了", {
+            position: "top-right",
+            timeout: 3500,
+            // 根据该id来决定toast的身份
+            id: "这已经是第一页了"
+        });
+        return;
+    }
+
+    loading.value = true;
+    pageCount.value -= 1;
+    const result = await userAPI.getAllUsers(pageCount.value)
+    if (result.status === 200) {
+        users.value = result.data;
+        loading.value = false;
+        console.log(users.value);
+    }
+}
+
+async function fetchEndData(){
+    loading.value = true;
+    pageCount.value = pageMaxCount.value
+    const result = await userAPI.getAllUsers(pageCount.value)
     if (result.status === 200) {
         users.value = result.data;
         loading.value = false;
@@ -126,6 +186,7 @@ async function createUser() {
 
     closeCreate();
     clearCurrent()
+    fetchEndData()
 }
 
 function deleteUser(id) {
@@ -303,11 +364,16 @@ async function updateUser(id) {
 
         </div>
 
-        <div class="join">
-            <button class="join-item btn btn-lg">1</button>
-            <button class="join-item btn btn-lg btn-active">2</button>
-            <button class="join-item btn btn-lg">3</button>
-            <button class="join-item btn btn-lg">4</button>
+        <div class="join space-x-4 flex justify-center">
+            <button class="join-item btn" @click="fetchBackData()">
+                <ChevronLeftIcon class="w-6 h-6" />
+            </button>
+
+            <div class="join-item btn font-bold">{{ `第${pageCount}页` }}</div>
+
+            <button class="join-item btn" @click="fetchNextData()">
+                <ChevronRightIcon class="w-6 h-6" />
+            </button>
         </div>
 
     </div>
