@@ -156,7 +156,7 @@ function deleteBlog(id) {
 
                     <CreateBlogDialog @createSuccess="() => fetchEndData()" />
 
-                    <button class="btn btn-ghost" @click="fetchData()">
+                    <button class="btn btn-ghost" @click="fetchData(pageCount)">
                         <ArrowPathIcon class="w-7 h-7" />
                         <div>刷新列表</div>
                     </button>
@@ -165,7 +165,7 @@ function deleteBlog(id) {
             <div v-else class="flex flex-col h-[80vh] space-y-8 justify-center items-center xl:mr-40">
                 <div class=" space-x-4 flex flex-row">
                     <CreateBlogDialog @createSuccess="() => fetchEndData()" />
-                    <button class="btn btn-ghost space-x-2" @click="fetchData()">
+                    <button class="btn btn-ghost space-x-2" @click="fetchData(pageCount)">
                         <ArrowPathIcon class="w-7 h-7" />
                         <div>刷新列表</div>
                     </button>

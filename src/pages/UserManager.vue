@@ -31,6 +31,8 @@ async function getPageMaxCount() {
 }
 
 async function fetchData(pageCount = 1) {
+    if (!openCheck()) return;
+
     await getPageMaxCount();
 
     loading.value = true;
@@ -162,13 +164,15 @@ function openCreate() {
 }
 
 function closeCreate() {
-    loading.value = true;
-    fetchData();
-    isCreateOpen.value = false;
     isEditOpen.value = false;
+    isCreateOpen.value = false;
+    fetchData(pageCount)
+    closeEdit()
 }
 
 async function createUser() {
+    await getPageMaxCount();
+
     if (!validCurrentData()) {
         toast.error("请填写完整 再创建用户!", {
             position: "top-center",
@@ -213,13 +217,14 @@ function deleteUser(id) {
         component: UserManagerYesOrNo,
         listeners: {
             clickYse: async function () {
+                await getPageMaxCount();
                 await userAPI.deleteUser(id);
                 if (users.value.length === 1) {
                     if (pageCount.value > 1) {
                         pageCount.value -= 1;
                     }
                 }
-                fetchData(pageCount.value);
+                fetchData(pageCount);
                 toast.dismiss("deleteUser")
                 toast.success("删除成功", {
                     position: "top-center",
@@ -262,6 +267,8 @@ function closeEdit(id) {
 }
 
 async function updateUser(id) {
+    await getPageMaxCount();
+
     const result = await userAPI.updateUser(id, {
         name: currentName.value,
         email: currentEmail.value,
@@ -279,7 +286,7 @@ async function updateUser(id) {
     }
 
     closeEdit(id)
-    fetchData()
+    fetchData(pageCount)
 }
 
 </script>
@@ -296,7 +303,7 @@ async function updateUser(id) {
                     <UserPlusIcon class="w-7 h-7" />
                     <div>添加用户</div>
                 </button>
-                <button class="btn btn-ghost" @click="fetchData()">
+                <button class="btn btn-ghost" @click="fetchData(pageCount)">
                     <ArrowPathIcon class="w-7 h-7" />
                     <div>刷新列表</div>
                 </button>
@@ -308,7 +315,7 @@ async function updateUser(id) {
                     <UserPlusIcon class="w-7 h-7" />
                     <div>添加用户</div>
                 </button>
-                <button class="btn btn-ghost" @click="fetchData()">
+                <button class="btn btn-ghost" @click="fetchData(pageCount)">
                     <ArrowPathIcon class="w-7 h-7" />
                     <div>刷新列表</div>
                 </button>
