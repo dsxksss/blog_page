@@ -55,8 +55,8 @@ function setopen(value) {
                             leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
                             <DialogPanel
                                 class="relative bg-slate-700 overflow-scroll scroll-smooth h-[84vh] w-[90vw] transform rounded-lg shadow-xl transition-all">
-                                <button class="btn btn-ghost btn-circle absolute right-3 top-3" @click="setopen(false)">
-                                    <XMarkIcon class="w-7 h-7" />
+                                <button class="btn btn:sm btn-ghost btn-circle absolute right-2 top-2" @click="setopen(false)">
+                                    <XMarkIcon class="w-6 h-6" />
                                 </button>
                                 <div class=" px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                                     <div class=" space-y-6">
