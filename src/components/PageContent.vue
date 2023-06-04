@@ -6,8 +6,8 @@ import {inject} from "vue"
 
 const pages = [
     Home,
-    BlogManager,
     UserManager,
+    BlogManager,
 ];
 
 </script>

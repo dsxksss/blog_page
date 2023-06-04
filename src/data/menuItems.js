@@ -10,17 +10,17 @@ const menuItems = [
     },
     {
         index: 1,
-        title: "blog管理",
-        iconColor: '',
-        isActive: false,
-        component: NewspaperIcon, 
-    },
-    {
-        index: 2,
         title: "用户管理",
         iconColor: '',
         isActive: false,
         component: UsersIcon,
+    },
+    {
+        index: 2,
+        title: "blog管理",
+        iconColor: '',
+        isActive: false,
+        component: NewspaperIcon, 
     },
 ];
 

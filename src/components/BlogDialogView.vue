@@ -23,9 +23,8 @@ function setopen(value) {
 
 <template>
     <div>
-        <div class="space-y-2 px-20 cursor-pointer">
-            <div class="text-5xl border-b-2 border-opacity-0 border-white hover:border-orange-300 py-1 flex items-center "
-                @click="setopen(true)">
+        <div class="space-y-2 px-20 cursor-pointer" @click="setopen(true)">
+            <div class="text-5xl border-b-2 border-opacity-0 border-white hover:border-orange-300 py-1 flex items-center ">
                 <TagIcon class="inline w-6 h-6" /> {{ title }}
             </div>
             <div class="flex items-center">
@@ -61,13 +60,10 @@ function setopen(value) {
                             leave-from="opacity-100 translate-y-0 sm:scale-100"
                             leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
                             <DialogPanel
-                                class="relative overflow-scroll bg-slate-100 scroll-smooth h-[84vh] w-[90vw] transform rounded-lg shadow-xl transition-all">
-                                <button class="btn btn:sm btn-ghost btn-circle absolute right-2 top-2"
-                                    @click="setopen(false)">
-                                    <XMarkIcon class="w-6 h-6" />
-                                </button>
+                                class="relative overflow-scroll  bg-slate-100 scroll-smooth h-[84vh] w-[90vw] transform rounded-lg shadow-xl transition-all">
+
                                 <div class=" px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                                    <div class=" space-y-6">
+                                    <div class="space-y-6">
                                         <div>
                                             <v-md-preview :text="props.content" height="500px"></v-md-preview>
                                         </div>

@@ -39,11 +39,11 @@ async function getPageMaxCount() {
     pageMaxCount.value = maxCount;
 }
 
-async function fetchData(pageCount = 1) {
+async function fetchData(page = 1) {
     await getPageMaxCount();
 
     loading.value = true;
-    const result = await blogAPI.getBlogs(pageCount);
+    const result = await blogAPI.getBlogs(page);
     if (result.status === 200) {
         blogs.value = result.data;
         loading.value = false;
@@ -156,7 +156,7 @@ function deleteBlog(id) {
 
                     <CreateBlogDialog @createSuccess="() => fetchEndData()" />
 
-                    <button class="btn btn-ghost" @click="fetchData(pageCount)">
+                    <button class="btn btn-ghost" @click="fetchData(pageCount.value)">
                         <ArrowPathIcon class="w-5 h-5" />
                         <div>刷新列表</div>
                     </button>
@@ -175,7 +175,7 @@ function deleteBlog(id) {
                                     <th class="bg-base-100">
                                         <div class="flex flex-row">
                                             <CreateBlogDialog @createSuccess="() => fetchEndData()" />
-                                            <button class="btn btn-ghost space-x-2" @click="fetchData(pageCount)">
+                                            <button class="btn btn-ghost space-x-2" @click="fetchData(pageCount.value)">
                                                 <ArrowPathIcon class="w-5 h-5" />
                                                 <div>刷新</div>
                                             </button>
@@ -235,12 +235,12 @@ function deleteBlog(id) {
                     </div>
                 </div>
                 <div class="join space-x-4 flex justify-center">
-                    <button :disabled="pageCount > 1 ? null : 'disabled'" class="join-item btn btn-ghost"
+                    <button :disabled="pageCount.value > 1 ? null : 'disabled'" class="join-item btn btn-ghost"
                         @click="fetchBackData()">
                         <ChevronLeftIcon class="w-6 h-6" />
                     </button>
                     <div class="join-item btn btn-ghost font-bold">{{ `第${pageCount}页` }}</div>
-                    <button :disabled="pageCount < pageMaxCount ? null : 'disabled'" class="join-item btn-ghost btn"
+                    <button :disabled="pageCount.value < pageMaxCount.value ? null : 'disabled'" class="join-item btn-ghost btn"
                         @click="fetchNextData()">
                         <ChevronRightIcon class="w-6 h-6" />
                     </button>
