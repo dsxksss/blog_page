@@ -31,6 +31,8 @@ async function getPageMaxCount() {
 }
 
 async function fetchData(pageCount = 1) {
+    if (!openCheck()) return;
+
     await getPageMaxCount();
 
     loading.value = true;
@@ -163,7 +165,8 @@ function openCreate() {
 
 function closeCreate() {
     loading.value = true;
-    fetchData();
+    fetchData(pageCount);
+    loading.value = false;
     isCreateOpen.value = false;
     isEditOpen.value = false;
 }
@@ -296,7 +299,7 @@ async function updateUser(id) {
                     <UserPlusIcon class="w-7 h-7" />
                     <div>添加用户</div>
                 </button>
-                <button class="btn btn-ghost" @click="fetchData()">
+                <button class="btn btn-ghost" @click="fetchData(pageCount)">
                     <ArrowPathIcon class="w-7 h-7" />
                     <div>刷新列表</div>
                 </button>
@@ -308,7 +311,7 @@ async function updateUser(id) {
                     <UserPlusIcon class="w-7 h-7" />
                     <div>添加用户</div>
                 </button>
-                <button class="btn btn-ghost" @click="fetchData()">
+                <button class="btn btn-ghost" @click="fetchData(pageCount)">
                     <ArrowPathIcon class="w-7 h-7" />
                     <div>刷新列表</div>
                 </button>
@@ -322,7 +325,16 @@ async function updateUser(id) {
                                 <th class="bg-base-100">电子邮箱</th>
                                 <th class="bg-base-100">用户密码</th>
                                 <th class="bg-base-100" v-if="!isCreateOpen.value">创建日期</th>
-                                <th class="bg-base-100">操作按钮</th>
+                                <th class="bg-base-100">
+                                    <button class="btn btn-ghost space-x-2" @click="openCreate()">
+                                        <UserPlusIcon class="w-5 h-5" />
+                                        <div>添加</div>
+                                    </button>
+                                    <button class="btn btn-ghost space-x-2" @click="fetchData(pageCount)">
+                                        <ArrowPathIcon class="w-5 h-5" />
+                                        <div>刷新</div>
+                                    </button>
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -367,15 +379,15 @@ async function updateUser(id) {
                                 <td v-else>
                                     待创建...
                                 </td>
-                                <th class="space-x-2">
-                                    <button v-if="!user.edit" class="btn btn-primary btn-sm"
+                                <th class="space-x-2 ml-4">
+                                    <button v-if="!user.edit" class="btn btn-ghost btn-sm"
                                         @click="openEdit(user._id)">编辑用户</button>
                                     <button v-if="!user.edit" class="btn btn-error btn-sm"
                                         @click="() => { if (!openCheck()) return; deleteUser(user._id) }">删除用户</button>
                                     <button v-if="user.edit" class="btn btn-success btn-sm"
                                         @click="isCreateOpen ? createUser() : updateUser(user._id)">{{ isCreateOpen ?
                                             "创建用户" : "保存数据" }}</button>
-                                    <button v-if="user.edit" class="btn btn-primary btn-sm"
+                                    <button v-if="user.edit" class="btnbtn-ghost btn-sm"
                                         @click="isCreateOpen ? closeCreate() : closeEdit(user._id)">{{ isCreateOpen ? "取消创建"
                                             :
                                             "取消编辑" }}</button>
@@ -386,11 +398,13 @@ async function updateUser(id) {
                 </div>
             </div>
             <div class="join space-x-4 flex justify-center">
-                <button class="join-item btn btn-ghost" @click="fetchBackData()">
+                <button :disabled="pageCount > 1 ? null : 'disabled'" class="join-item btn btn-ghost"
+                    @click="fetchBackData()">
                     <ChevronLeftIcon class="w-6 h-6" />
                 </button>
-                <div class="join-item btn font-bold btn-ghost">{{ `第${pageCount}页` }}</div>
-                <button class="join-item btn btn-ghost" @click="fetchNextData()">
+                <div class="join-item btn btn-ghost font-bold">{{ `第${pageCount}页` }}</div>
+                <button :disabled="pageCount < pageMaxCount ? null : 'disabled'" class="join-item btn-ghost btn"
+                    @click="fetchNextData()">
                     <ChevronRightIcon class="w-6 h-6" />
                 </button>
             </div>
