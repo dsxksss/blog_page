@@ -30,13 +30,13 @@ async function getPageMaxCount() {
     pageMaxCount.value = maxCount;
 }
 
-async function fetchData(pageCount = 1) {
+async function fetchData(page = 1) {
     if (!openCheck()) return;
 
     await getPageMaxCount();
 
     loading.value = true;
-    const result = await userAPI.getUsers(pageCount);
+    const result = await userAPI.getUsers(page);
     if (result.status === 200) {
         users.value = result.data;
         loading.value = false;
@@ -166,7 +166,7 @@ function openCreate() {
 function closeCreate() {
     isEditOpen.value = false;
     isCreateOpen.value = false;
-    fetchData(pageCount)
+    fetchData(pageCount.value)
     closeEdit()
 }
 
@@ -224,7 +224,7 @@ function deleteUser(id) {
                         pageCount.value -= 1;
                     }
                 }
-                fetchData(pageCount);
+                fetchData(pageCount.value);
                 toast.dismiss("deleteUser")
                 toast.success("删除成功", {
                     position: "top-center",
@@ -286,7 +286,7 @@ async function updateUser(id) {
     }
 
     closeEdit(id)
-    fetchData(pageCount)
+    fetchData(pageCount.value)
 }
 
 </script>
@@ -303,7 +303,7 @@ async function updateUser(id) {
                     <UserPlusIcon class="w-7 h-7" />
                     <div>添加用户</div>
                 </button>
-                <button class="btn btn-ghost" @click="fetchData(pageCount)">
+                <button class="btn btn-ghost" @click="fetchData(pageCount.value)">
                     <ArrowPathIcon class="w-7 h-7" />
                     <div>刷新列表</div>
                 </button>
@@ -315,7 +315,7 @@ async function updateUser(id) {
                     <UserPlusIcon class="w-7 h-7" />
                     <div>添加用户</div>
                 </button>
-                <button class="btn btn-ghost" @click="fetchData(pageCount)">
+                <button class="btn btn-ghost" @click="fetchData(pageCount.value)">
                     <ArrowPathIcon class="w-7 h-7" />
                     <div>刷新列表</div>
                 </button>
