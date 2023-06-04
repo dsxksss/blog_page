@@ -63,7 +63,7 @@ function setopen(value) {
 
 <template>
     <div class="inline">
-        <button class="btn btn-primary btn-sm" @click="setopen(true)">编辑博客</button>
+        <button class="btn btn-ghost btn-sm" @click="setopen(true)">编辑博客</button>
 
         <TransitionRoot class="z-50" as="template" :show="open">
             <Dialog as="div" class="relative z-10" @close="open = false">

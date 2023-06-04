@@ -6,6 +6,7 @@ import timeFormatted from '../tools/timeFormatted';
 import UserManagerYesOrNo from '../components/UserManagerYesOrNo.vue';
 import { useToast } from "vue-toastification";
 import avatarAPI from "../api/avatar";
+import { async } from '@kangc/v-md-editor';
 
 onMounted(() => {
     fetchData();
@@ -30,13 +31,13 @@ async function getPageMaxCount() {
     pageMaxCount.value = maxCount;
 }
 
-async function fetchData(pageCount = 1) {
+async function fetchData(page = 1) {
     if (!openCheck()) return;
 
     await getPageMaxCount();
 
     loading.value = true;
-    const result = await userAPI.getUsers(pageCount);
+    const result = await userAPI.getUsers(page);
     if (result.status === 200) {
         users.value = result.data;
         loading.value = false;
@@ -150,7 +151,8 @@ function openCheck() {
     return true;
 }
 
-function openCreate() {
+async function openCreate() {
+    await getPageMaxCount()
     if (!openCheck()) return;
     users.value.push({
         name: "",
@@ -161,14 +163,14 @@ function openCreate() {
     loading.value = false;
     isCreateOpen.value = true;
     isEditOpen.value = true;
+    console.log(pageCount.value);
 }
 
-function closeCreate() {
-    loading.value = true;
-    fetchData(pageCount);
-    loading.value = false;
-    isCreateOpen.value = false;
-    isEditOpen.value = false;
+async function closeCreate() {
+    isCreateOpen.value = false
+    isEditOpen.value = false;;
+    await getPageMaxCount()
+    fetchData(pageCount.value);
 }
 
 async function createUser() {
@@ -258,9 +260,8 @@ function openEdit(id) {
 }
 
 
-function closeEdit(id) {
-    const index = users.value.findIndex(u => u._id == id);
-    users.value[index].edit = false;
+async function closeEdit() {
+    fetchData(pageCount.value)
     isEditOpen.value = false;
 }
 
@@ -281,8 +282,8 @@ async function updateUser(id) {
         });
     }
 
-    closeEdit(id)
-    fetchData()
+    closeEdit()
+    fetchData(pageCount.value)
 }
 
 </script>
@@ -299,38 +300,28 @@ async function updateUser(id) {
                     <UserPlusIcon class="w-7 h-7" />
                     <div>添加用户</div>
                 </button>
-                <button class="btn btn-ghost" @click="fetchData(pageCount)">
+                <button class="btn btn-ghost" @click="fetchData(pageCount.value)">
                     <ArrowPathIcon class="w-7 h-7" />
                     <div>刷新列表</div>
                 </button>
             </div>
         </div>
         <div v-else class="flex flex-col h-[80vh] space-y-8 justify-center items-center">
-            <div class=" space-x-4">
-                <button class="btn btn-ghost space-x-2" @click="openCreate()">
-                    <UserPlusIcon class="w-7 h-7" />
-                    <div>添加用户</div>
-                </button>
-                <button class="btn btn-ghost" @click="fetchData(pageCount)">
-                    <ArrowPathIcon class="w-7 h-7" />
-                    <div>刷新列表</div>
-                </button>
-            </div>
             <div class="space-x-2 flex flex-row justify-center ">
                 <div class="overflow-x-auto flex lg:justify-center">
                     <table class="table">
                         <thead>
                             <tr>
-                                <th class="bg-base-100">用户名称</th>
-                                <th class="bg-base-100">电子邮箱</th>
-                                <th class="bg-base-100">用户密码</th>
-                                <th class="bg-base-100" v-if="!isCreateOpen.value">创建日期</th>
+                                <th class="bg-base-100">用户</th>
+                                <th class="bg-base-100">邮箱</th>
+                                <th class="bg-base-100">密码</th>
+                                <th class="bg-base-100" v-if="!isCreateOpen.value">创建时间</th>
                                 <th class="bg-base-100">
                                     <button class="btn btn-ghost space-x-2" @click="openCreate()">
                                         <UserPlusIcon class="w-5 h-5" />
                                         <div>添加</div>
                                     </button>
-                                    <button class="btn btn-ghost space-x-2" @click="fetchData(pageCount)">
+                                    <button class="btn btn-ghost space-x-2" @click="fetchData(pageCount.value)">
                                         <ArrowPathIcon class="w-5 h-5" />
                                         <div>刷新</div>
                                     </button>
@@ -340,12 +331,8 @@ async function updateUser(id) {
                         <tbody>
                             <tr v-for="(user, index) in users" :key="user._id">
                                 <td>
-                                    <div class="flex items-center space-x-3">
-                                        <div class="avatar">
-                                            <div class="mask mask-squircle w-12 h-12">
-                                                <img :src="imgs[index].url" alt="加载失败" />
-                                            </div>
-                                        </div>
+                                    <div class="flex items-center">
+                                       
                                         <!-- name -->
                                         <div v-if="user.edit">
                                             <input type="text" name="name" v-model="currentName"
@@ -388,7 +375,7 @@ async function updateUser(id) {
                                         @click="isCreateOpen ? createUser() : updateUser(user._id)">{{ isCreateOpen ?
                                             "创建用户" : "保存数据" }}</button>
                                     <button v-if="user.edit" class="btnbtn-ghost btn-sm"
-                                        @click="isCreateOpen ? closeCreate() : closeEdit(user._id)">{{ isCreateOpen ? "取消创建"
+                                        @click="isCreateOpen ? closeCreate() : closeEdit()">{{ isCreateOpen ? "取消创建"
                                             :
                                             "取消编辑" }}</button>
                                 </th>

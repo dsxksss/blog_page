@@ -157,19 +157,12 @@ function deleteBlog(id) {
                     <CreateBlogDialog @createSuccess="() => fetchEndData()" />
 
                     <button class="btn btn-ghost" @click="fetchData(pageCount)">
-                        <ArrowPathIcon class="w-7 h-7" />
+                        <ArrowPathIcon class="w-5 h-5" />
                         <div>刷新列表</div>
                     </button>
                 </div>
             </div>
             <div v-else class="flex flex-col h-[80vh] space-y-8 justify-center items-center">
-                <div class=" space-x-4 flex flex-row">
-                    <CreateBlogDialog @createSuccess="() => fetchEndData()" />
-                    <button class="btn btn-ghost space-x-2" @click="fetchData(pageCount)">
-                        <ArrowPathIcon class="w-7 h-7" />
-                        <div>刷新列表</div>
-                    </button>
-                </div>
                 <div class="space-x-2 flex flex-row justify-center ">
                     <div class="overflow-x-auto flex lg:justify-center">
                         <table class="table">
@@ -179,11 +172,19 @@ function deleteBlog(id) {
                                     <th class="bg-base-100">作者名称</th>
                                     <th class="bg-base-100">作者邮箱</th>
                                     <th class="bg-base-100" v-if="!isCreateOpen.value">创建日期</th>
-                                    <th class="bg-base-100">操作按钮</th>
+                                    <th class="bg-base-100">
+                                        <div class="flex flex-row">
+                                            <CreateBlogDialog @createSuccess="() => fetchEndData()" />
+                                            <button class="btn btn-ghost space-x-2" @click="fetchData(pageCount)">
+                                                <ArrowPathIcon class="w-5 h-5" />
+                                                <div>刷新</div>
+                                            </button>
+                                        </div>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(blog, index) in blogs" :key="blog._id">
+                                <tr v-for="blog in blogs" :key="blog._id">
 
                                     <!-- title -->
                                     <td v-if="blog.edit">
@@ -239,8 +240,8 @@ function deleteBlog(id) {
                         <ChevronLeftIcon class="w-6 h-6" />
                     </button>
                     <div class="join-item btn btn-ghost font-bold">{{ `第${pageCount}页` }}</div>
-                    <button :disabled="pageCount < pageMaxCount ? null : 'disabled'"
-                        class="join-item btn-ghost btn" @click="fetchNextData()">
+                    <button :disabled="pageCount < pageMaxCount ? null : 'disabled'" class="join-item btn-ghost btn"
+                        @click="fetchNextData()">
                         <ChevronRightIcon class="w-6 h-6" />
                     </button>
                 </div>

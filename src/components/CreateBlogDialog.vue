@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
-import { PencilIcon } from '@heroicons/vue/24/solid';
+import { PencilSquareIcon } from '@heroicons/vue/24/solid';
 import { useToast } from "vue-toastification";
 import userAPI from '../api/user';
 import blogAPI from '../api/blog';
@@ -85,8 +85,8 @@ function setopen(value) {
 <template>
     <div>
         <button class="btn btn-ghost space-x-2" @click="setopen(true)">
-            <PencilIcon class="w-7 h-7" />
-            <div>新增博客</div>
+            <PencilSquareIcon class="w-5 h-5" />
+            <div>添加</div>
         </button>
 
         <TransitionRoot class="z-50" as="template" :show="open">
