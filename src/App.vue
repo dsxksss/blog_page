@@ -1,6 +1,5 @@
 <script setup>
 import "./index.css";
-import Menu from "./components/Menu.vue";
 import NavBar from './components/NavBar.vue';
 import PageContent from "./components/PageContent.vue"
 import { ref, provide } from "vue";
@@ -13,10 +12,8 @@ provide("nowPage", nowPage);
 <template>
   <main class="w-screen overflow-hidden rounded-box">
     <!-- 导航栏 -->
-    <NavBar class="z-10 fixed px-5 border-b-slate-700 border-b-[1px]"></NavBar>
-    <!-- 菜单栏 -->
-    <Menu class="fixed h-screen flex justify-center flex-col pl-6"></Menu>
+    <NavBar class="z-10 fixed px-10 border-b-slate-700 border-b-[1px]"></NavBar>
     <!-- 页面容器 -->
-    <PageContent class="ml-24 mt-20 overflow-scroll"></PageContent>
+    <PageContent class="my-10 mt-24 overflow-scroll"></PageContent>
   </main>
 </template>

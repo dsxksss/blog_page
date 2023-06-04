@@ -302,7 +302,7 @@ async function updateUser(id) {
                 </button>
             </div>
         </div>
-        <div v-else class="flex flex-col h-[80vh] space-y-8 justify-center items-center xl:mr-40">
+        <div v-else class="flex flex-col h-[80vh] space-y-8 justify-center items-center">
             <div class=" space-x-4">
                 <button class="btn btn-ghost space-x-2" @click="openCreate()">
                     <UserPlusIcon class="w-7 h-7" />
@@ -318,11 +318,11 @@ async function updateUser(id) {
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>用户名称</th>
-                                <th>电子邮箱</th>
-                                <th>用户密码</th>
-                                <th v-if="!isCreateOpen.value">创建日期</th>
-                                <th>操作按钮</th>
+                                <th class="bg-base-100">用户名称</th>
+                                <th class="bg-base-100">电子邮箱</th>
+                                <th class="bg-base-100">用户密码</th>
+                                <th class="bg-base-100" v-if="!isCreateOpen.value">创建日期</th>
+                                <th class="bg-base-100">操作按钮</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -330,7 +330,7 @@ async function updateUser(id) {
                                 <td>
                                     <div class="flex items-center space-x-3">
                                         <div class="avatar">
-                                            <div class="mask mask-circle w-12 h-12">
+                                            <div class="mask mask-squircle w-12 h-12">
                                                 <img :src="imgs[index].url" alt="加载失败" />
                                             </div>
                                         </div>
@@ -386,11 +386,11 @@ async function updateUser(id) {
                 </div>
             </div>
             <div class="join space-x-4 flex justify-center">
-                <button class="join-item btn" @click="fetchBackData()">
+                <button class="join-item btn btn-ghost" @click="fetchBackData()">
                     <ChevronLeftIcon class="w-6 h-6" />
                 </button>
-                <div class="join-item btn font-bold">{{ `第${pageCount}页` }}</div>
-                <button class="join-item btn" @click="fetchNextData()">
+                <div class="join-item btn font-bold btn-ghost">{{ `第${pageCount}页` }}</div>
+                <button class="join-item btn btn-ghost" @click="fetchNextData()">
                     <ChevronRightIcon class="w-6 h-6" />
                 </button>
             </div>

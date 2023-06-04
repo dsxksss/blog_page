@@ -162,7 +162,7 @@ function deleteBlog(id) {
                     </button>
                 </div>
             </div>
-            <div v-else class="flex flex-col h-[80vh] space-y-8 justify-center items-center xl:mr-40">
+            <div v-else class="flex flex-col h-[80vh] space-y-8 justify-center items-center">
                 <div class=" space-x-4 flex flex-row">
                     <CreateBlogDialog @createSuccess="() => fetchEndData()" />
                     <button class="btn btn-ghost space-x-2" @click="fetchData()">
@@ -175,11 +175,11 @@ function deleteBlog(id) {
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>博客标题</th>
-                                    <th>作者名称</th>
-                                    <th>作者邮箱</th>
-                                    <th v-if="!isCreateOpen.value">创建日期</th>
-                                    <th>操作按钮</th>
+                                    <th class="bg-base-100">博客标题</th>
+                                    <th class="bg-base-100">作者名称</th>
+                                    <th class="bg-base-100">作者邮箱</th>
+                                    <th class="bg-base-100" v-if="!isCreateOpen.value">创建日期</th>
+                                    <th class="bg-base-100">操作按钮</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -223,8 +223,7 @@ function deleteBlog(id) {
 
                                     <th class="space-x-2">
                                         <UpdateBlogDialog :title="blog.title" :content="blog.content"
-                                            :authorName="blog.author.name" :blogId="blog._id"
-                                            @updateSuccess="() => fetchEndData()" />
+                                            :authorName="blog.author.name" :blogId="blog._id" />
 
                                         <button v-if="!blog.edit" class="btn btn-error btn-sm"
                                             @click="deleteBlog(blog._id)">删除博客</button>
@@ -235,11 +234,11 @@ function deleteBlog(id) {
                     </div>
                 </div>
                 <div class="join space-x-4 flex justify-center">
-                    <button class="join-item btn" @click="fetchBackData()">
+                    <button class="join-item btn btn-ghost" @click="fetchBackData()">
                         <ChevronLeftIcon class="w-6 h-6" />
                     </button>
-                    <div class="join-item btn font-bold">{{ `第${pageCount}页` }}</div>
-                    <button class="join-item btn" @click="fetchNextData()">
+                    <div class="join-item btn btn-ghost font-bold">{{ `第${pageCount}页` }}</div>
+                    <button class="join-item btn-ghost btn" @click="fetchNextData()">
                         <ChevronRightIcon class="w-6 h-6" />
                     </button>
                 </div>

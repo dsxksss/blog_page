@@ -12,10 +12,11 @@ function changePage(pageIndex) {
 </script>
 
 <template>
-    <ul class="menu rounded-box p-2 space-y-2">
+    <ul class="menu menu-horizontal  flex rounded-box p-2 space-x-4">
         <li v-for="item in items" :key="item.index">
-            <a :class="item.isActive ? 'active' : null" @click="changePage(item.index)">
+            <a :class="item.isActive ? 'border-b-4 border-black' : null" @click="changePage(item.index)">
                 <component :is="item.component" :class="`w-6 h-6 ${item.iconColor}`"></component>
+                <span>{{ item.title }}</span>
             </a>
         </li>
     </ul>

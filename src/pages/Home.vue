@@ -39,21 +39,13 @@ async function fetchData() {
     </div>
     <div v-else-if="!blogs.length" class="flex space-x-2 justify-center">
         <div class="flex justify-center items-center space-x-1">
-            <span class="text-xl mr-2">数据库内没有任何博客 请先添加博客后刷新列表... </span>
+            <span class="text-xl mr-2">数据库内没有任何博客 请刷新页面 </span>
 
             <CreateBlogDialog @createSuccess="() => fetchEndData()" />
-
-            <button class="btn btn-ghost" @click="fetchData()">
-                <ArrowPathIcon class="w-7 h-7" />
-                <div>刷新列表</div>
-            </button>
         </div>
     </div>
-    <div v-else class=" space-y-6 flex flex-col justify-center">
-        <button class="mx-20 btn btn-ghost" @click="fetchData()">
-            <ArrowPathIcon class="w-7 h-7" />
-            <div>刷新列表</div>
-        </button>
+    <div v-else class=" space-y-10 flex flex-col">
+
         <BlogDialogView v-for="(blog, index) in blogs" :title="blog.title" :content="blog.content"
             :authorName="blog.author.name" :createdAt="blog.createdAt" :img="imgs[index].url">
         </BlogDialogView>

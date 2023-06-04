@@ -100,17 +100,17 @@ function setopen(value) {
                             leave-from="opacity-100 translate-y-0 sm:scale-100"
                             leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
                             <DialogPanel
-                                class="relative bg-slate-700 h-[75vh] w-[90vw] transform overflow-hidden rounded-lg shadow-xl transition-all">
+                                class="relative bg-slate-100 h-[75vh] w-[90vw] transform overflow-hidden rounded-lg shadow-xl transition-all">
                                 <div class=" px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                                     <div class=" space-y-6">
 
-                                        <div class="flex items-center justify-around">
+                                        <div class="flex items-center justify-between">
 
                                             <div class="flex space-x-6">
                                                 <div class="space-y-2">
                                                     <div class="text-2xl">博客标题:</div>
                                                     <input type="text" name="name" v-model="currentTitle"
-                                                        placeholder="在这里填写你的博客标题"
+                                                        placeholder="博客标题"
                                                         class="font-bold text-sm input input-bordered input-md w-full max-w-xs" />
                                                 </div>
                                                 <div class="space-y-2">
@@ -123,8 +123,8 @@ function setopen(value) {
                                             </div>
 
                                             <div class="flex flex-row justify-end p-6 space-x-4">
-                                                <button class="btn btn-success" @click="createBlog()">创建博客</button>
-                                                <button class="btn btn-primary" @click="open = false">取消操作</button>
+                                                <button class="btn btn-ghost" @click="createBlog()">创建</button>
+                                                <button class="btn btn-ghost" @click="open = false">取消</button>
                                             </div>
 
                                         </div>
