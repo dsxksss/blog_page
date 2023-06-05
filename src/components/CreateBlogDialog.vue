@@ -63,6 +63,20 @@ async function createBlog(){
         author: currentAuthor.value
     })
 
+    async function checkHisUser() {
+        await fetchData();
+        if (users.value.length <= 0) {
+            toast.error("请先创建用户再创建博客!", {
+                position: "top-center",
+                timeout: 3500,
+                // 根据该id来决定toast的身份
+                id: "请填写完整 再创建博客!"
+            });
+            return setopen(false);
+        }
+        return setopen(true);
+    }
+
     toast.success("创建成功", {
         position: "top-center",
         timeout: 2000,
@@ -84,7 +98,7 @@ function setopen(value) {
 
 <template>
     <div>
-        <button class="btn btn-ghost space-x-2" @click="setopen(true)">
+        <button class="btn btn-ghost space-x-2" @click="checkHisUser()">
             <PencilIcon class="w-7 h-7" />
             <div>新增博客</div>
         </button>
