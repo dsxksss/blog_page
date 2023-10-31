@@ -3,7 +3,7 @@ import { BookOpenIcon, PencilSquareIcon, UserPlusIcon, ArrowRightOnRectangleIcon
 const menuItems = [
     {
         path: '/',
-        title: "博客主页",
+        title: "博客列表",
         iconColor: '',
         isActive: true,
         component: BookOpenIcon,
