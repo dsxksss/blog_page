@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted ,watch} from "vue";
 import { ArrowPathIcon } from '@heroicons/vue/24/solid';
 import BlogDialogView from "../components/BlogDialogView.vue";
 import blogAPI from "../api/blog";
@@ -17,6 +17,7 @@ onMounted(() => {
 
 const blogs = ref([])
 const imgs = ref([])
+const searchText = ref("")
 const loading = ref(true)
 
 async function fetchData() {
@@ -31,6 +32,23 @@ async function fetchData() {
 }
 
 
+function fuzzySearch() {
+    if (searchText.value != "") {
+        const filteredData = blogs.value.filter(item => {
+            const title = item.title.toLowerCase();
+            const searchQuery = searchText.value.toLowerCase();
+            return title.includes(searchQuery);
+        });
+        if (filteredData.length > 0) {
+            blogs.value = filteredData;
+        }
+    }else{
+        fetchData()
+    }
+}
+
+watch(searchText,fuzzySearch)
+
 </script>
 
 <template>
@@ -38,11 +56,10 @@ async function fetchData() {
         加载中请稍后......
     </div>
     <div v-else-if="!blogs.length" class="flex space-x-2 justify-center">
+
         <div class="flex justify-center items-center space-x-1">
             <span class="text-xl mr-2">数据库内没有任何博客 请先添加博客后刷新列表... </span>
-
             <CreateBlogDialog @createSuccess="() => fetchEndData()" />
-
             <button class="btn btn-ghost" @click="fetchData()">
                 <ArrowPathIcon class="w-7 h-7" />
                 <div>刷新列表</div>
@@ -50,10 +67,17 @@ async function fetchData() {
         </div>
     </div>
     <div v-else class=" space-y-6 flex flex-col justify-center">
-        <button class="mx-20 btn btn-ghost" @click="fetchData()">
-            <ArrowPathIcon class="w-7 h-7" />
-            <div>刷新列表</div>
-        </button>
+        <div class="w-screen flex justify-around items-center">
+            <button class="mx-20 btn btn-ghost" @click="fetchData()">
+                <ArrowPathIcon class="w-7 h-7" />
+                <div>刷新列表</div>
+            </button>
+            <div class="space-x-4">
+                <input v-model="searchText" type="text" class="input input-primary input-sm" placeholder="输入搜索内容">
+                <button @click="fuzzySearch" class="btn btn-sm">搜索</button>
+            </div>
+        </div>
+
         <BlogDialogView v-for="(blog, index) in blogs" :title="blog.title" :content="blog.content"
             :authorName="blog.author.name" :createdAt="blog.createdAt" :img="imgs[index].url">
         </BlogDialogView>

@@ -8,7 +8,6 @@ const toast = useToast()
 const name = ref("admin");
 const password = ref("");
 
-
 const handleSubmit = () => {
     if (name.value != "" && password.value != "") {
         if (name.value == "admin" && password.value == "123456") {
