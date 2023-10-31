@@ -1,19 +1,9 @@
-<script setup>
-import Home from "../pages/Home.vue"
-import BlogManager from '../pages/BlogManager.vue';
-import UserManager from "../pages/UserManager.vue";
-import {inject} from "vue"
-
-const pages = [
-    Home,
-    BlogManager,
-    UserManager,
-];
-
-</script>
-
 <template>
-    <KeepAlive>
-        <component :is="pages[inject('nowPage').value]" />
-    </KeepAlive>
+    <!-- 顶部填充物 -->
+    <div class="pt-20 h-screen overflow-hidden">
+        <!-- 页面实体内容 -->
+        <div class="h-full overflow-y-scroll scroll-smooth">
+            <RouterView />
+        </div>
+    </div>
 </template>

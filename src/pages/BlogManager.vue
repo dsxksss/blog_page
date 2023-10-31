@@ -145,7 +145,6 @@ function deleteBlog(id) {
 
 <template>
     <div>
-
         <div>
             <div v-if="loading.value" class="flex space-x-2 justify-center">
                 加载中请稍后......

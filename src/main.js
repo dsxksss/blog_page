@@ -9,6 +9,7 @@ import githubTheme from '@kangc/v-md-editor/lib/theme/github.js';
 import '@kangc/v-md-editor/lib/theme/style/github.css';
 // highlightjs
 import hljs from 'highlight.js';
+import router from "./router"
 import App from "./App.vue";
 
 VMdEditor.use(githubTheme,{
@@ -17,7 +18,11 @@ VMdEditor.use(githubTheme,{
 VMdPreview.use(githubTheme, {
     Hljs: hljs,
 });
+
 const app = createApp(App);
+
+// 使用vue-router插件
+app.use(router)
 app.use(Toast, {});
 app.use(VMdEditor, {});
 app.use(VMdPreview, {});
