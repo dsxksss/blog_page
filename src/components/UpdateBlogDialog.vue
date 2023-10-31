@@ -15,7 +15,6 @@ const open = ref(false)
 const currentTitle = ref(props.title)
 const currentContent = ref(props.content)
 const toast = useToast()
-const emit = defineEmits(['updateSuccess'])
 
 function validCurrentData() {
     let can = true;
@@ -29,7 +28,7 @@ function validCurrentData() {
 }
 
 async function updateBlog() {
-     if (!validCurrentData()) {
+    if (!validCurrentData()) {
         toast.error("请填写完整 再编辑博客!", {
             position: "top-center",
             timeout: 3500,
@@ -53,7 +52,6 @@ async function updateBlog() {
         id: "创建成功"
     });
 
-    emit('updateSuccess')
     open.value = false;
 }
 
@@ -65,7 +63,7 @@ function setopen(value) {
 
 <template>
     <div class="inline">
-        <button class="btn btn-primary btn-sm" @click="setopen(true)">编辑博客</button>
+        <button class="btn btn-ghost btn-sm" @click="setopen(true)">编辑博客</button>
 
         <TransitionRoot class="z-50" as="template" :show="open">
             <Dialog as="div" class="relative z-10" @close="open = false">
@@ -78,11 +76,11 @@ function setopen(value) {
                             leave-from="opacity-100 translate-y-0 sm:scale-100"
                             leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
                             <DialogPanel
-                                class="relative bg-slate-700 h-[75vh] w-[90vw] transform overflow-hidden rounded-lg shadow-xl transition-all">
+                                class="relative bg-base-100 h-[75vh] w-[90vw] transform overflow-hidden rounded-lg shadow-xl transition-all">
                                 <div class=" px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                                     <div class=" space-y-6">
 
-                                        <div class="flex items-center justify-around">
+                                        <div class="flex items-center justify-between">
 
                                             <div class="flex space-x-6">
                                                 <div class="space-y-2">
@@ -101,8 +99,8 @@ function setopen(value) {
                                             </div>
 
                                             <div class="flex flex-row justify-end p-6 space-x-4">
-                                                <button class="btn btn-success" @click="updateBlog()">修改博客</button>
-                                                <button class="btn btn-primary" @click="open = false">取消操作</button>
+                                                <button class="btn btn-ghost" @click="updateBlog()">修改博客</button>
+                                                <button class="btn btn-ghost" @click="open = false">取消操作</button>
                                             </div>
 
                                         </div>
@@ -125,4 +123,3 @@ function setopen(value) {
 
     </div>
 </template>
-

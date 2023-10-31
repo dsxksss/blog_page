@@ -74,7 +74,7 @@ watch(searchText,fuzzySearch)
             </button>
             <div class="space-x-4">
                 <input v-model="searchText" type="text" class="input input-primary input-sm" placeholder="输入搜索内容">
-                <button @click="fuzzySearch" class="btn btn-sm">搜索</button>
+                <button @click="fuzzySearch" class="btn btn-sm btn-ghost">搜索</button>
             </div>
         </div>
 

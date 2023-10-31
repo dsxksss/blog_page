@@ -1,6 +1,8 @@
 <script setup>
 import { useRouter } from "vue-router";
 import { ref, watch, onMounted } from "vue";
+import Menu from './Menu.vue';
+
 import menuItems from '../data/menuItems';
 import { ExclamationTriangleIcon} from '@heroicons/vue/24/solid'
 
@@ -38,6 +40,8 @@ watch(router.currentRoute, getNowComponent)
             </button>
         </div>
         <div class="flex-none">
+                <Menu></Menu>
+
                 <div  class="flex flex-row items-center space-x-2">
                     <button @click="outLogin" class="btn btn-error btn-sm">
                         退出登录

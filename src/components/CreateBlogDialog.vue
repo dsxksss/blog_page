@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
-import { PencilIcon } from '@heroicons/vue/24/solid';
+import { PencilSquareIcon } from '@heroicons/vue/24/solid';
 import { useToast } from "vue-toastification";
 import userAPI from '../api/user';
 import blogAPI from '../api/blog';
@@ -26,7 +26,7 @@ async function fetchData() {
     }
 }
 
-function clearCurrent(){
+function clearCurrent() {
     currentTitle.value = "";
     currentContent.value = "";
     currentAuthor.value = "";
@@ -60,8 +60,8 @@ async function checkHisUser() {
     return setopen(true);
 }
 
-async function createBlog(){
-    if(!validCurrentData()){
+async function createBlog() {
+    if (!validCurrentData()) {
         toast.error("请填写完整 再创建博客!", {
             position: "top-center",
             timeout: 3500,
@@ -76,6 +76,7 @@ async function createBlog(){
         content: currentContent.value,
         author: currentAuthor.value
     })
+
     toast.success("创建成功", {
         position: "top-center",
         timeout: 2000,
@@ -98,8 +99,8 @@ function setopen(value) {
 <template>
     <div>
         <button class="btn btn-ghost space-x-2" @click="checkHisUser()">
-            <PencilIcon class="w-7 h-7" />
-            <div>新增博客</div>
+            <PencilSquareIcon class="w-5 h-5" />
+            <div>添加</div>
         </button>
 
         <TransitionRoot class="z-50" as="template" :show="open">
@@ -113,31 +114,32 @@ function setopen(value) {
                             leave-from="opacity-100 translate-y-0 sm:scale-100"
                             leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
                             <DialogPanel
-                                class="relative bg-slate-700 h-[75vh] w-[90vw] transform overflow-hidden rounded-lg shadow-xl transition-all">
+                                class="relative bg-slate-100 h-[75vh] w-[90vw] transform overflow-hidden rounded-lg shadow-xl transition-all">
                                 <div class=" px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                                     <div class=" space-y-6">
 
-                                        <div class="flex items-center justify-around">
+                                        <div class="flex items-center justify-between">
 
                                             <div class="flex space-x-6">
                                                 <div class="space-y-2">
                                                     <div class="text-2xl">博客标题:</div>
-                                                    <input type="text" name="name" v-model="currentTitle"
-                                                        placeholder="在这里填写你的博客标题"
+                                                    <input type="text" name="name" v-model="currentTitle" placeholder="博客标题"
                                                         class="font-bold text-sm input input-bordered input-md w-full max-w-xs" />
                                                 </div>
                                                 <div class="space-y-2">
                                                     <div class="text-2xl">发布用户:</div>
-                                                    <select v-model="currentAuthor" class="select select-bordered w-full max-w-xs">
+                                                    <select v-model="currentAuthor"
+                                                        class="select select-bordered w-full max-w-xs">
                                                         <option disabled selected>请选择发布用户</option>
-                                                        <option v-for="user in users" :value="user._id">{{ user.name }}</option>
+                                                        <option v-for="user in users" :value="user._id">{{ user.name }}
+                                                        </option>
                                                     </select>
                                                 </div>
                                             </div>
 
                                             <div class="flex flex-row justify-end p-6 space-x-4">
-                                                <button class="btn btn-success" @click="createBlog()">创建博客</button>
-                                                <button class="btn btn-primary" @click="open = false">取消操作</button>
+                                                <button class="btn btn-ghost" @click="createBlog()">创建</button>
+                                                <button class="btn btn-ghost" @click="open = false">取消</button>
                                             </div>
 
                                         </div>
@@ -160,4 +162,3 @@ function setopen(value) {
 
     </div>
 </template>
-

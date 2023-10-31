@@ -8,12 +8,12 @@ const items = ref(menuItems);
 </script>
 
 <template>
-    <ul class="menu flex rounded-box p-2 pl-10 space-y-4">
-        <li v-for="item in items" :key="item.path">
-            <RouterLink :to="item.path"
-                :class="item.path == router.currentRoute.value.path ? 'active' : null">
-                <component :is="item.component" :class="`w-6 h-6 ${item.iconColor}`"></component>
-            </RouterLink>
-        </li>
-    </ul>
+    <ul class="menu menu-horizontal  flex rounded-box p-2 space-x-4">
+            <li v-for="item in items" :key="item.path">
+                <RouterLink :to="item.path" :class="item.path == router.currentRoute.value.path ? 'border-b-2 border-black' : null">
+                    <component :is="item.component" :class="`w-6 h-6 ${item.iconColor}`"></component>
+                    <span>{{ item.title }}</span>
+                </RouterLink>
+            </li>
+        </ul>
 </template>

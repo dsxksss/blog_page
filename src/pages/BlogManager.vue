@@ -161,7 +161,7 @@ function deleteBlog(id) {
                     </button>
                 </div>
             </div>
-            <div v-else class="flex flex-col h-[80vh] space-y-8 justify-center items-center xl:mr-40">
+            <div v-else class="flex flex-col h-[80vh] space-y-8 justify-center items-center">
                 <div class=" space-x-4 flex flex-row">
                     <CreateBlogDialog @createSuccess="() => fetchEndData()" />
                     <button class="btn btn-ghost space-x-2" @click="fetchData(pageCount)">
