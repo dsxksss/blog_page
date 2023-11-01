@@ -1,8 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
-import { PencilSquareIcon } from '@heroicons/vue/24/solid';
-import { useToast } from "vue-toastification";
+import { BookmarkSquareIcon } from '@heroicons/vue/24/solid';
 import userAPI from '../api/user';
 import blogAPI from '../api/blog';
 
@@ -11,7 +10,6 @@ const users = ref([])
 const currentTitle = ref('')
 const currentContent = ref('')
 const currentAuthor = ref('')
-const toast = useToast()
 const emit = defineEmits(['createSuccess'])
 
 
@@ -49,12 +47,8 @@ function validCurrentData() {
 async function checkHisUser() {
     await fetchData();
     if (users.value.length <= 0) {
-        toast.error("请先创建用户再创建博客!", {
-            position: "top-center",
-            timeout: 3500,
-            // 根据该id来决定toast的身份
-            id: "请填写完整 再创建博客!"
-        });
+        
+        alert("请先创建用户再创建博客")
         return setopen(false);
     }
     return setopen(true);
@@ -62,12 +56,7 @@ async function checkHisUser() {
 
 async function createBlog() {
     if (!validCurrentData()) {
-        toast.error("请填写完整 再创建博客!", {
-            position: "top-center",
-            timeout: 3500,
-            // 根据该id来决定toast的身份
-            id: "请填写完整 再创建博客!"
-        });
+        alert("填写完整")
         return;
     }
 
@@ -77,13 +66,8 @@ async function createBlog() {
         author: currentAuthor.value
     })
 
-    toast.success("创建成功", {
-        position: "top-center",
-        timeout: 2000,
-        hideProgressBar: true,
-        // 根据该id来决定toast的身份
-        id: "创建成功"
-    });
+     alert("创建成功")
+   
 
     emit('createSuccess')
     clearCurrent();
@@ -99,8 +83,8 @@ function setopen(value) {
 <template>
     <div>
         <button class="btn btn-ghost space-x-2" @click="checkHisUser()">
-            <PencilSquareIcon class="w-5 h-5" />
-            <div>添加</div>
+            <BookmarkSquareIcon class="w-5 h-5" />
+            <div>发布博客</div>
         </button>
 
         <TransitionRoot class="z-50" as="template" :show="open">

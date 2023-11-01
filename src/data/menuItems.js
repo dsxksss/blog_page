@@ -10,14 +10,14 @@ const menuItems = [
     },
     {
         path: '/blogmanager',
-        title: "博客管理",
+        title: "管理博客",
         iconColor: '',
         isActive: false,
         component: PencilSquareIcon,
     },
     {
         path: '/usermanager',
-        title: "用户管理",
+        title: "管理用户",
         iconColor: '',
         isActive: false,
         component: UserPlusIcon,

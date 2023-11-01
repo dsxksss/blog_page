@@ -1,7 +1,6 @@
 <script setup>
 import { ref } from 'vue'
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
-import { XMarkIcon, TagIcon, CursorArrowRaysIcon } from '@heroicons/vue/24/solid';
 import timeFormatted from '../tools/timeFormatted';
 
 const props = defineProps({
@@ -23,30 +22,20 @@ function setopen(value) {
 
 <template>
     <div>
-        <div class="space-y-2 px-20 cursor-pointer" @click="setopen(true)">
-            <div class="text-5xl border-b-2 border-opacity-0 border-white hover:border-orange-300 py-1 flex items-center ">
-                <TagIcon class="inline w-6 h-6" /> {{ title }}
-            </div>
-            <div class="flex items-center">
-                <CursorArrowRaysIcon class="inline w-6 h-6" />
-                <div class="text-xl font-bold ml-2">点击浏览</div>
-            </div>
-            <div class="flex justify-between flex-row-reverse items-end">
-                <div class="avatar">
-                    <div class="flex flex-col justify-start">
-                        <div class="text-lg"> {{ authorName }} </div>
-                        <div>发布</div>
-                    </div>
-                    <div class="mask mask-circle w-12 h-12 ml-2">
-                        <img :src="props.img" alt="加载失败" />
+        <div class="card card-compact shadow-xl shadow-slate-200 w-64 m-4" @click="setopen(true)">
+            <figure class="bg-cover h-40 bg-bottom">
+                <img :src="image || '/overlapping-circles.svg'" :alt="title" />
+            </figure>
+            <div class="card-body text-ellipsis">
+                <h2 class="card-title">{{ title || "没有标题" }}</h2>
+                <div class="text-lg font-medium ml-1"> {{ timeFormatted(props.createdAt) }}</div>
+                <div class="card-actions pt-2 justify-center items-center">
+                    <div class="flex flex-row w-full justify-end">
+                        <button class="btn btn-ghost text-lg">浏览更多</button>
                     </div>
                 </div>
-
-                <div class="text-lg font-medium ml-1"> {{ timeFormatted(props.createdAt) }}</div>
             </div>
         </div>
-
-
 
 
         <TransitionRoot class="z-50" as="template" :show="open">

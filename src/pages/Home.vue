@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted ,watch} from "vue";
-import { ArrowPathIcon } from '@heroicons/vue/24/solid';
+import { ArrowPathIcon,MagnifyingGlassIcon } from '@heroicons/vue/24/solid';
 import BlogDialogView from "../components/BlogDialogView.vue";
 import blogAPI from "../api/blog";
 import avatarAPI from "../api/avatar";
@@ -56,30 +56,22 @@ watch(searchText,fuzzySearch)
         加载中请稍后......
     </div>
     <div v-else-if="!blogs.length" class="flex space-x-2 justify-center">
-
-        <div class="flex justify-center items-center space-x-1">
-            <span class="text-xl mr-2">数据库内没有任何博客 请先添加博客后刷新列表... </span>
-            <CreateBlogDialog @createSuccess="() => fetchEndData()" />
-            <button class="btn btn-ghost" @click="fetchData()">
-                <ArrowPathIcon class="w-7 h-7" />
-                <div>刷新列表</div>
-            </button>
+        <div class="flex justify-center items-center space-x-1 pt-5">
+            这里空空如也,快去发表博客吧
         </div>
     </div>
-    <div v-else class=" space-y-6 flex flex-col justify-center">
-        <div class="w-screen flex justify-around items-center">
-            <button class="mx-20 btn btn-ghost" @click="fetchData()">
-                <ArrowPathIcon class="w-7 h-7" />
-                <div>刷新列表</div>
-            </button>
-            <div class="space-x-4">
+    <div v-else class="space-y-6 flex flex-col justify-center">
+            <div class="space-x-4 pt-5 flex justify-center">
                 <input v-model="searchText" type="text" class="input input-primary input-sm" placeholder="输入搜索内容">
-                <button @click="fuzzySearch" class="btn btn-sm btn-ghost">搜索</button>
+                <button @click="fuzzySearch" class="btn btn-sm btn-ghost">
+                    <MagnifyingGlassIcon class="w-5 h-5"></MagnifyingGlassIcon>
+                </button>
             </div>
+        <div class="grid lg:grid-cols-3 xl:grid-cols-4 sm:grid-cols-2 grid-cols-1 justify-start 2xl:justify-items-center">
+            <BlogDialogView v-for="(blog, index) in blogs" :title="blog.title" :content="blog.content"
+                :authorName="blog.author.name" :createdAt="blog.createdAt" :img="imgs[index].url">
+            </BlogDialogView>
         </div>
 
-        <BlogDialogView v-for="(blog, index) in blogs" :title="blog.title" :content="blog.content"
-            :authorName="blog.author.name" :createdAt="blog.createdAt" :img="imgs[index].url">
-        </BlogDialogView>
     </div>
 </template>

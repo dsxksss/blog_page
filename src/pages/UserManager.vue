@@ -1,10 +1,9 @@
 <script setup>
-import { ArrowPathIcon, UserPlusIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/24/solid';
+import { ArrowPathIcon, PlusCircleIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/24/solid';
 import userAPI from '../api/user';
 import { ref, onMounted } from "vue";
 import timeFormatted from '../tools/timeFormatted';
 import UserManagerYesOrNo from '../components/UserManagerYesOrNo.vue';
-import { useToast } from "vue-toastification";
 import avatarAPI from "../api/avatar";
 
 onMounted(() => {
@@ -23,7 +22,6 @@ const currentEmail = ref("")
 const currentPassword = ref("")
 const pageCount = ref(1)
 const pageMaxCount = ref(0)
-const toast = useToast()
 
 async function getPageMaxCount() {
     const maxCount = await userAPI.getPageMaxCount()
@@ -48,12 +46,7 @@ async function fetchNextData() {
     if (!openCheck()) return;
     await getPageMaxCount();
     if (pageCount.value >= pageMaxCount.value) {
-        toast.error("这已经是最后一页了", {
-            position: "top-right",
-            timeout: 3500,
-            // 根据该id来决定toast的身份
-            id: "这已经是最后一页了"
-        });
+       
         return;
     }
 
@@ -72,12 +65,7 @@ async function fetchBackData() {
     await getPageMaxCount();
 
     if (pageCount.value <= 1) {
-        toast.error("这已经是第一页了", {
-            position: "top-right",
-            timeout: 3500,
-            // 根据该id来决定toast的身份
-            id: "这已经是第一页了"
-        });
+       
         return;
     }
 
@@ -139,12 +127,7 @@ function clearCurrent() {
 
 function openCheck() {
     if (isEditOpen.value || isCreateOpen.value) {
-        toast.error("请编辑完当前用户后,再进行操作!", {
-            position: "top-center",
-            timeout: 3500,
-            // 根据该id来决定toast的身份
-            id: "edit"
-        });
+        alert("请编辑完当前用户");
         return false;
     }
     return true;
@@ -174,22 +157,12 @@ async function createUser() {
     await getPageMaxCount();
 
     if (!validCurrentData()) {
-        toast.error("请填写完整 再创建用户!", {
-            position: "top-center",
-            timeout: 3500,
-            // 根据该id来决定toast的身份
-            id: "请填写完整 再创建用户!"
-        });
+        alert("请填写完整")
         return;
     }
 
     if (await hisEmail()) {
-        toast.error("该邮箱已使用 请修改后重试!", {
-            position: "top-center",
-            timeout: 3500,
-            // 根据该id来决定toast的身份
-            id: "该邮箱已使用 请修改后重试!"
-        });
+        alert("该邮箱已使用!!!")
         return;
     }
 
@@ -199,52 +172,26 @@ async function createUser() {
         password: currentPassword.value
     })
 
-    toast.success("创建成功", {
-        position: "top-center",
-        timeout: 2000,
-        hideProgressBar: true,
-        // 根据该id来决定toast的身份
-        id: "创建成功"
-    });
+    alert("创建成功")
 
     closeCreate();
     clearCurrent()
     fetchEndData()
 }
 
-function deleteUser(id) {
-    toast.error({
-        component: UserManagerYesOrNo,
-        listeners: {
-            clickYse: async function () {
-                await getPageMaxCount();
-                await userAPI.deleteUser(id);
-                if (users.value.length === 1) {
-                    if (pageCount.value > 1) {
-                        pageCount.value -= 1;
-                    }
-                }
-                fetchData(pageCount.value);
-                toast.dismiss("deleteUser")
-                toast.success("删除成功", {
-                    position: "top-center",
-                    timeout: 2000,
-                    hideProgressBar: true,
-                    // 根据该id来决定toast的身份
-                    id: "删除成功"
-                });
-            },
-            clickNo: function () {
-                toast.dismiss("deleteUser")
+async function deleteUser(id) {
+    const result = confirm("你确定要删除这个用户吗?")
+    if (result) {
+       await getPageMaxCount();
+        await userAPI.deleteUser(id);
+        if (users.value.length === 1) {
+            if (pageCount.value > 1) {
+                pageCount.value -= 1;
             }
         }
-    }, {
-        position: "bottom-center",
-        closeOnClick: false,
-        timeout: false,
-        // 根据该id来决定toast的身份
-        id: "deleteUser"
-    });
+        fetchData(pageCount.value);
+        alert("删除成功");
+    }
 }
 
 function openEdit(id) {
@@ -276,18 +223,13 @@ async function updateUser(id) {
     });
 
     if (result.data != null || result.data != undefined) {
-        toast.success("修改成功", {
-            position: "top-center",
-            timeout: 2000,
-            hideProgressBar: true,
-            // 根据该id来决定toast的身份
-            id: "deleteUser"
-        });
+        alert("修改成功")
     }
 
     closeEdit(id)
     fetchData(pageCount.value)
 }
+
 
 </script>
 
@@ -298,49 +240,39 @@ async function updateUser(id) {
         </div>
         <div v-else-if="!users.length" class="flex space-x-2 justify-center">
             <div class="flex justify-center items-center space-x-1">
-                <span class="text-xl mr-2">数据库内没有任何用户 请先添加用户后刷新列表... </span>
-                <button class="btn btn-ghost space-x-2" @click="openCreate()">
-                    <UserPlusIcon class="w-7 h-7" />
+                <div class="flex justify-center items-center space-x-1">
+                            <span class="text-xl mr-2">这里空空如也</span>
+                        </div><button class="btn btn-ghost space-x-2" @click="openCreate()">
+                    <PlusCircleIcon class="w-7 h-7" />
                     <div>添加用户</div>
                 </button>
-                <button class="btn btn-ghost" @click="fetchData(pageCount.value)">
-                    <ArrowPathIcon class="w-7 h-7" />
-                    <div>刷新列表</div>
-                </button>
+                
             </div>
         </div>
         <div v-else class="flex flex-col h-[80vh] space-y-8 justify-center items-center">
-            <div class=" space-x-4">
-                <button class="btn btn-ghost space-x-2" @click="openCreate()">
-                    <UserPlusIcon class="w-7 h-7" />
-                    <div>添加用户</div>
-                </button>
-                <button class="btn btn-ghost" @click="fetchData(pageCount.value)">
-                    <ArrowPathIcon class="w-7 h-7" />
-                    <div>刷新列表</div>
-                </button>
-            </div>
             <div class="space-x-2 flex flex-row justify-center ">
-                <div class="overflow-x-auto flex lg:justify-center">
-                    <table class="table">
+                 <div class="overflow-x-auto flex lg:justify-center shadow-2xl border rounded-xl p-8">
+                            <table class="table table-zebra">
                         <thead>
                             <tr>
-                                <th>用户名称</th>
-                                <th>电子邮箱</th>
-                                <th>用户密码</th>
-                                <th v-if="!isCreateOpen.value">创建日期</th>
-                                <th>操作按钮</th>
+                                <th class="bg-base-100">用户</th>
+                                <th class="bg-base-100">邮箱</th>
+                                <th class="bg-base-100">密码</th>
+                                <th class="bg-base-100" v-if="!isCreateOpen.value">创建时间</th>
+                                <th class="bg-base-100">
+                                    <button class="btn btn-ghost space-x-2" @click="openCreate()">
+                                        <PlusCircleIcon class="w-5 h-5" />
+                                        <div>添加</div>
+                                    </button>
+                                   
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="(user, index) in users" :key="user._id">
                                 <td>
-                                    <div class="flex items-center space-x-3">
-                                        <div class="avatar">
-                                            <div class="mask mask-circle w-12 h-12">
-                                                <img :src="imgs[index].url" alt="加载失败" />
-                                            </div>
-                                        </div>
+                                    <div class="flex items-center">
+
                                         <!-- name -->
                                         <div v-if="user.edit">
                                             <input type="text" name="name" v-model="currentName"
@@ -374,15 +306,15 @@ async function updateUser(id) {
                                 <td v-else>
                                     待创建...
                                 </td>
-                                <th class="space-x-2">
-                                    <button v-if="!user.edit" class="btn btn-primary btn-sm"
+                                <th class="space-x-2 ml-4">
+                                    <button v-if="!user.edit" class="btn btn-ghost btn-sm"
                                         @click="openEdit(user._id)">编辑用户</button>
-                                    <button v-if="!user.edit" class="btn btn-error btn-sm"
+                                    <button v-if="!user.edit" class="btn btn-error btn-sm text-white"
                                         @click="() => { if (!openCheck()) return; deleteUser(user._id) }">删除用户</button>
-                                    <button v-if="user.edit" class="btn btn-success btn-sm"
+                                    <button v-if="user.edit" class="btn btn-success btn-sm text-white"
                                         @click="isCreateOpen ? createUser() : updateUser(user._id)">{{ isCreateOpen ?
                                             "创建用户" : "保存数据" }}</button>
-                                    <button v-if="user.edit" class="btn btn-primary btn-sm"
+                                    <button v-if="user.edit" class="btnbtn-ghost btn-sm"
                                         @click="isCreateOpen ? closeCreate() : closeEdit(user._id)">{{ isCreateOpen ? "取消创建"
                                             :
                                             "取消编辑" }}</button>
@@ -392,12 +324,14 @@ async function updateUser(id) {
                     </table>
                 </div>
             </div>
-            <div class="join space-x-4 flex justify-center">
-                <button class="join-item btn" @click="fetchBackData()">
+            <div class="fixed bottom-20  join space-x-4 flex justify-center">
+                <button :disabled="pageCount > 1 ? null : 'disabled'" class="join-item btn btn-ghost"
+                    @click="fetchBackData()">
                     <ChevronLeftIcon class="w-6 h-6" />
                 </button>
-                <div class="join-item btn font-bold">{{ `第${pageCount}页` }}</div>
-                <button class="join-item btn" @click="fetchNextData()">
+                <div class="join-item btn btn-ghost font-bold">{{ `${pageCount}` }}</div>
+                <button :disabled="pageCount < pageMaxCount ? null : 'disabled'" class="join-item btn-ghost btn"
+                    @click="fetchNextData()">
                     <ChevronRightIcon class="w-6 h-6" />
                 </button>
             </div>

@@ -1,7 +1,6 @@
 <script setup>
 import { ref } from 'vue'
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
-import { useToast } from "vue-toastification";
 import blogAPI from '../api/blog';
 
 const props = defineProps({
@@ -14,7 +13,6 @@ const props = defineProps({
 const open = ref(false)
 const currentTitle = ref(props.title)
 const currentContent = ref(props.content)
-const toast = useToast()
 
 function validCurrentData() {
     let can = true;
@@ -29,12 +27,7 @@ function validCurrentData() {
 
 async function updateBlog() {
     if (!validCurrentData()) {
-        toast.error("请填写完整 再编辑博客!", {
-            position: "top-center",
-            timeout: 3500,
-            // 根据该id来决定toast的身份
-            id: "请填写完整 再编辑博客!"
-        });
+        alert("请填写完整")
         return;
     }
 
@@ -44,13 +37,7 @@ async function updateBlog() {
         content: currentContent.value,
     })
 
-    toast.success("修改成功", {
-        position: "top-center",
-        timeout: 2000,
-        hideProgressBar: true,
-        // 根据该id来决定toast的身份
-        id: "创建成功"
-    });
+    alert("修改成功")
 
     open.value = false;
 }

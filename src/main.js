@@ -1,6 +1,4 @@
 import { createApp } from "vue";
-import Toast from "vue-toastification";
-import "vue-toastification/dist/index.css";
 import VMdEditor from '@kangc/v-md-editor';
 import '@kangc/v-md-editor/lib/style/base-editor.css';
 import VMdPreview from '@kangc/v-md-editor/lib/preview';
@@ -23,7 +21,6 @@ const app = createApp(App);
 
 // 使用vue-router插件
 app.use(router)
-app.use(Toast, {});
 app.use(VMdEditor, {});
 app.use(VMdPreview, {});
 app.mount("#app");

@@ -5,7 +5,6 @@ import userAPI from "../api/user";
 import blogAPI from "../api/blog";
 import timeFormatted from '../tools/timeFormatted';
 import BlogManagerYesOrNo from '../components/BlogManagerYesOrNo.vue';
-import { useToast } from "vue-toastification";
 import CreateBlogDialog from '../components/CreateBlogDialog.vue';
 import UpdateBlogDialog from '../components/UpdateBlogDialog.vue';
 
@@ -18,7 +17,6 @@ const currentEmail = ref("")
 const currentPassword = ref("")
 const pageCount = ref(1)
 const pageMaxCount = ref(0)
-const toast = useToast()
 
 onMounted(() => {
     getAllUsers();
@@ -54,12 +52,7 @@ async function fetchData(pageCount = 1) {
 async function fetchNextData() {
     await getPageMaxCount();
     if (pageCount.value >= pageMaxCount.value) {
-        toast.error("这已经是最后一页了", {
-            position: "top-right",
-            timeout: 3500,
-            // 根据该id来决定toast的身份
-            id: "这已经是最后一页了"
-        });
+       
         return;
     }
 
@@ -77,12 +70,7 @@ async function fetchBackData() {
     await getPageMaxCount();
 
     if (pageCount.value <= 1) {
-        toast.error("这已经是第一页了", {
-            position: "top-right",
-            timeout: 3500,
-            // 根据该id来决定toast的身份
-            id: "这已经是第一页了"
-        });
+      
         return;
     }
 
@@ -108,81 +96,59 @@ async function fetchEndData() {
     }
 }
 
-function deleteBlog(id) {
-    toast.error({
-        component: BlogManagerYesOrNo,
-        listeners: {
-            clickYse: async function () {
-                await blogAPI.deleteBlog(id);
-                if (blogs.value.length === 1) {
-                    if (pageCount.value > 1) {
-                        pageCount.value -= 1;
-                    }
-                }
-                fetchData(pageCount.value);
-                toast.dismiss("deleteBlog")
-                toast.success("删除成功", {
-                    position: "top-center",
-                    timeout: 2000,
-                    hideProgressBar: true,
-                    // 根据该id来决定toast的身份
-                    id: "删除成功"
-                });
-            },
-            clickNo: function () {
-                toast.dismiss("deleteBlog")
+async function deleteBlog(id) {
+    const result = confirm("你确定要删除此博客吗?")
+    if(result) {
+        await blogAPI.deleteBlog(id);
+        if (blogs.value.length === 1) {
+            if (pageCount.value > 1) {
+                pageCount.value -= 1;
             }
         }
-    }, {
-        position: "bottom-center",
-        closeOnClick: false,
-        timeout: false,
-        // 根据该id来决定toast的身份
-        id: "deleteBlog"
-    });
+        fetchData(pageCount.value);
+        alert("删除成功");
+    }
 }
 </script>
 
 <template>
     <div>
+
         <div>
             <div v-if="loading.value" class="flex space-x-2 justify-center">
                 加载中请稍后......
             </div>
             <div v-else-if="!blogs.length" class="flex space-x-2 justify-center">
-                <div class="flex justify-center items-center space-x-1">
-                    <span class="text-xl mr-2">数据库内没有任何博客 请先添加博客后刷新列表... </span>
+                <div class="flex justify-center items-center space-x-1 pt-5">
+                   <div class="flex justify-center items-center space-x-1">
+                        <span class="text-xl mr-2">这里空空如也</span>
+                    </div>
 
                     <CreateBlogDialog @createSuccess="() => fetchEndData()" />
-
-                    <button class="btn btn-ghost" @click="fetchData(pageCount)">
-                        <ArrowPathIcon class="w-7 h-7" />
-                        <div>刷新列表</div>
-                    </button>
                 </div>
             </div>
             <div v-else class="flex flex-col h-[80vh] space-y-8 justify-center items-center">
-                <div class=" space-x-4 flex flex-row">
-                    <CreateBlogDialog @createSuccess="() => fetchEndData()" />
-                    <button class="btn btn-ghost space-x-2" @click="fetchData(pageCount)">
-                        <ArrowPathIcon class="w-7 h-7" />
-                        <div>刷新列表</div>
-                    </button>
-                </div>
                 <div class="space-x-2 flex flex-row justify-center ">
-                    <div class="overflow-x-auto flex lg:justify-center">
-                        <table class="table">
+                    <div class="overflow-x-auto flex lg:justify-center shadow-2xl border rounded-xl p-8">
+                        <table class="table table-xs table-zebra">
                             <thead>
                                 <tr>
-                                    <th>博客标题</th>
-                                    <th>作者名称</th>
-                                    <th>作者邮箱</th>
-                                    <th v-if="!isCreateOpen.value">创建日期</th>
-                                    <th>操作按钮</th>
+                                    <th class="bg-base-100">标题</th>
+                                    <th class="bg-base-100">作者</th>
+                                    <th class="bg-base-100">邮箱</th>
+                                    <th class="bg-base-100" v-if="!isCreateOpen.value">日期</th>
+                                    <th class="bg-base-100">
+                                        <div class="flex flex-row">
+                                            <CreateBlogDialog @createSuccess="() => fetchEndData()" />
+                                            <button class="btn btn-ghost space-x-2" @click="fetchData(pageCount.value)">
+                                                
+                                            </button>
+                                        </div>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(blog, index) in blogs" :key="blog._id">
+                                <tr v-for="blog in blogs" :key="blog._id">
 
                                     <!-- title -->
                                     <td v-if="blog.edit">
@@ -222,10 +188,9 @@ function deleteBlog(id) {
 
                                     <th class="space-x-2">
                                         <UpdateBlogDialog :title="blog.title" :content="blog.content"
-                                            :authorName="blog.author.name" :blogId="blog._id"
-                                            @updateSuccess="() => fetchEndData()" />
+                                            :authorName="blog.author.name" :blogId="blog._id" />
 
-                                        <button v-if="!blog.edit" class="btn btn-error btn-sm"
+                                        <button v-if="!blog.edit" class="btn btn-error btn-sm text-white"
                                             @click="deleteBlog(blog._id)">删除博客</button>
                                     </th>
                                 </tr>
@@ -233,12 +198,14 @@ function deleteBlog(id) {
                         </table>
                     </div>
                 </div>
-                <div class="join space-x-4 flex justify-center">
-                    <button class="join-item btn" @click="fetchBackData()">
+                <div class="fixed bottom-20 join space-x-4 flex justify-center">
+                    <button :disabled="pageCount > 1 ? null : 'disabled'" class="join-item btn btn-ghost"
+                        @click="fetchBackData()">
                         <ChevronLeftIcon class="w-6 h-6" />
                     </button>
-                    <div class="join-item btn font-bold">{{ `第${pageCount}页` }}</div>
-                    <button class="join-item btn" @click="fetchNextData()">
+                <div class="join-item btn btn-ghost font-bold">{{ `${pageCount}` }}</div>
+                    <button :disabled="pageCount < pageMaxCount ? null : 'disabled'"
+                        class="join-item btn-ghost btn" @click="fetchNextData()">
                         <ChevronRightIcon class="w-6 h-6" />
                     </button>
                 </div>

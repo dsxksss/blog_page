@@ -4,7 +4,7 @@ import { ref, watch, onMounted } from "vue";
 import Menu from './Menu.vue';
 
 import menuItems from '../data/menuItems';
-import { ExclamationTriangleIcon} from '@heroicons/vue/24/solid'
+import { ExclamationTriangleIcon,BuildingLibraryIcon} from '@heroicons/vue/24/solid'
 
 const router = useRouter();
 const nowComponent = ref({});
@@ -33,18 +33,15 @@ watch(router.currentRoute, getNowComponent)
 </script>
 <template>
     <div class="navbar bg-base-100 z-50">
-        <div class="flex-1">
-            <button class="btn btn-ghost text-2xl">
-                <component :is="nowComponent.component" :class="`w-6 h-6 ${nowComponent.iconColor}`"></component>
-                    {{ nowComponent.title }}
-            </button>
+        <div class="flex-1 space-x-4">
+            <BuildingLibraryIcon class="w-10 h-10"></BuildingLibraryIcon>
+            <span class="text-2xl font-bold">BLOG System</span>
         </div>
-        <div class="flex-none">
+        <div class="flex-none space-x-2">
                 <Menu></Menu>
-
                 <div  class="flex flex-row items-center space-x-2">
-                    <button @click="outLogin" class="btn btn-error btn-sm">
-                        退出登录
+                    <button @click="outLogin" class="btn btn-error text-white">
+                        退出系统
                     </button>
                 </div>
             </div>

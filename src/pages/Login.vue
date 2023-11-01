@@ -1,10 +1,8 @@
 <script setup>
 import { useRouter } from "vue-router";
 import { ref } from "vue";
-import { useToast } from "vue-toastification";
 
 const router = useRouter();
-const toast = useToast()
 const name = ref("管理员");
 const password = ref("");
 
